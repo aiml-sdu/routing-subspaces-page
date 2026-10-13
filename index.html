@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Routing Subspaces: Auditing Evaluation-to-Deployment Mismatch in Fine-Tuned Language Models</title>
+  <meta name="description" content="Routing Subspaces: auditing evaluation-to-deployment mismatch in fine-tuned language models. NeurIPS 2026 poster.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Routing Subspaces">
+  <meta property="og:description" content="The intervention reduces the evaluation-to-deployment gap by more than 0.12 in ten of twelve model-behavior settings of controlled fine-tuned checkpoints and closes it in four. Non-adaptive, white-box diagnostic. NeurIPS 2026 poster.">
+  <meta property="og:url" content="https://aiml-sdu.github.io/routing-subspaces-page/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Routing Subspaces">
+  <meta name="twitter:description" content="Auditing evaluation-to-deployment mismatch in fine-tuned language models.">
+  <meta name="keywords" content="sandbagging, sycophancy, refusal, activation intervention, path patching, fine-tuned language models, auditing">
+  <meta name="citation_title" content="Routing Subspaces: Auditing Evaluation-to-Deployment Mismatch in Fine-Tuned Language Models">
+  <meta name="citation_author" content="Konrad, Phongsakon Mark">
+  <meta name="citation_author" content="Tanyel, Toygar">
+  <meta name="citation_author" content="Ayvaz, Serkan">
+  <meta name="citation_publication_date" content="2026">
+  <link rel="icon" type="image/svg+xml" href="static/images/icon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/site.css?v=8">
+  <script defer src="static/js/data.js?v=8"></script>
+  <script defer src="static/js/viz.js?v=8"></script>
+  <script defer src="static/js/results-viz.js?v=8"></script>
+  <script defer src="static/js/examples.js?v=8"></script>
+  <script defer src="static/js/examples-view.js?v=8"></script>
+  <script defer src="static/js/site.js?v=8"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="16" r="5" fill="var(--eval)"/><rect x="19" y="11" width="10" height="10" fill="var(--depl)"/></svg>
+      Routing Subspaces
+    </a>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#tldr">TL;DR</a><a href="#depth">Localization</a><a href="#audit">Method</a><a href="#examples">Examples</a><a href="#results">Results</a><a href="#controls">Controls</a><a href="#limits">Limits</a><a href="#cite">Cite</a>
+    </nav>
+    <button type="button" class="iconbtn" id="theme-toggle" aria-label="Color theme: auto">Theme: auto</button>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+    <div class="hero-text">
+      <div class="eyebrow">NeurIPS 2026 &middot; Poster</div>
+      <h1>Routing Subspaces</h1>
+      <p class="sub">Auditing Evaluation-to-Deployment Mismatch in Fine-Tuned Language Models</p>
+      <div class="authors"><span>Phongsakon Mark Konrad<sup>1,*</sup></span><span>Toygar Tanyel<sup>2</sup></span><span>Serkan Ayvaz<sup>1</sup></span></div>
+      <p class="affil"><sup>1</sup>Centre for Industrial Software, University of Southern Denmark, Sønderborg, Denmark<br><sup>2</sup>Promake, Newark, DE, USA<br><sup>*</sup>Now at University of Tübingen</p>
+      <div class="btns">
+        <a class="btn" href="https://openreview.net/forum?id=Lsf8vcSdAI" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 0h5.5L14 4.5V15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1zm5 1v4h4L9 1z"/></svg>Paper</a>
+        <a class="btn ghost" href="https://arxiv.org/abs/2607.20436" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 0h5.5L14 4.5V15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1zm5 1v4h4L9 1z"/></svg>arXiv</a>
+        <span class="btn ghost is-off" aria-disabled="true" title="The repository becomes public with the camera-ready version.">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Code: coming soon</span>
+        <a class="btn ghost" href="#examples">Browse prompts</a>
+        <a class="btn ghost" href="#cite">BibTeX</a>
+      </div>
+    </div>
+    <figure id="matrix-fig" class="viz card hero-fig">
+      <figcaption class="fig-title">Ten of twelve gaps shrink by more than 0.12; four close</figcaption>
+      <div class="legend"><span><span class="sw sw-ring"></span>before</span><span><span class="sw sw-ok"></span>closes</span><span><span class="sw sw-acc"></span>reduces</span><span><span class="sw sw-mut"></span>weak</span></div>
+      <div class="svgbox"><svg viewBox="0 0 560 420" role="img" aria-label="Held-out evaluation-to-deployment gap before and after the dose-2 intervention for twelve model and behavior cells. Ten cells reduce the gap by more than 0.12, four of them to below 0.06; Llama-3-8B and Gemma-2-9B sycophancy stay near baseline."></svg></div>
+      <p class="readout" aria-live="polite">Hover or tab through a row for its numbers and 95% intervals.</p>
+      <p class="caption">Submitted checkpoints, window fixed before the run, dose &lambda;&nbsp;=&nbsp;2; 95% paired-bootstrap intervals over question ids.</p>
+    </figure>
+    </div>
+
+    <div class="stats" role="list">
+      <div class="stat" role="listitem"><b>10 of 12</b><span>model&ndash;behavior settings where the intervention reduces the gap by more than 0.12</span></div>
+      <div class="stat" role="listitem"><b>4 of 12</b><span>settings where it closes the gap (post-intervention gap below 0.06)</span></div>
+      <div class="stat" role="listitem"><b>&le; 6.1 pp</b><span>change in deployment-framed rates across the twelve settings</span></div>
+      <div class="stat" role="listitem"><b>60 of 60</b><span>random-direction intervals include zero (fresh retrains)</span></div>
+    </div>
+    <p class="scope"><b>Scope.</b> The audit is a non-adaptive, white-box diagnostic for controlled fine-tuned checkpoints, not a training-time defense, a guarantee of deployment safety, or evidence about naturally arising failures.</p>
+  </div>
+</section>
+
+<section class="block" id="tldr">
+  <div class="wrap narrow">
+    <div class="head"><div class="eyebrow">TL;DR</div><h2>A checkpoint can look fixed under evaluation and not in ordinary use</h2></div>
+    <p class="tldr">Fine-tuning can make a model answer the same question differently depending on how it is framed. In controlled checkpoints, one fitted direction in a mid-depth attention window carries much of that gap: modifying it on held-out prompts reduces the gap by more than 0.12 in ten of twelve settings and closes it in four, and on fresh retrains random directions at the same dose do not. The clearest evaluation-versus-deployment case is sandbagging; sycophancy and refusal test framing-contingent task distinctions.</p>
+    <details class="abstract" id="plain" open>
+      <summary>In plain words</summary>
+      <div class="prose"><p>Before release, language models are tested, and the test results are taken to describe how the model behaves in ordinary use. Fine-tuning can break this link: a model can learn to answer the same question differently depending on how the question is framed. Test scores show that such a gap exists, but not where it comes from inside the model. We train models with a known gap in three tasks: answering worse when a question is framed as a test, agreeing with a user who asserts a wrong answer, and answering wrongly when a request declares harmful intent. We then ask whether one direction in the model&rsquo;s internal activity carries the gap. In ten of the twelve model and task combinations we study, changing the activity along that direction shrinks the gap substantially, and in four it brings the gap close to zero; changing it along random directions does not. In two combinations the method barely changes the gap, which shows where a single direction is not enough. Only the first task contrasts a test with ordinary use; in the other two, the model reacts to how the request is worded. The method needs full access to the model&rsquo;s internals, it is not designed to catch a developer who deliberately hides the gap, and we have not shown that it finds gaps that arise without being built in.</p></div>
+    </details>
+    <details class="abstract" id="abstract">
+      <summary>Read the abstract</summary>
+    <div class="prose">
+      <p>Safety evaluations often assume that behavior observed during testing reflects behavior in ordinary use, but fine-tuning can break this assumption. A checkpoint can appear fixed under evaluation-style prompts while the same behavior persists under ordinary-use prompts. Output scores reveal this mismatch but do not locate it. We investigate whether the distinction is encoded in a stable internal site and introduce an audit that uses path patching to choose a mid-depth window, fits a paired activation contrast there, and modifies the resulting coordinate on held-out prompts.</p>
+      <p>The intervention reduces the evaluation-to-deployment gap by more than 0.12 in ten of twelve model&ndash;behavior settings and closes it (post-intervention gap below 0.06) in four, across four full-matrix instruction-tuned model instances; among the eight settings with <i>n</i>&nbsp;&ge;&nbsp;120 paired questions, six reduce and one closes. A fifth model supports localization and edit-provenance checks, and in the twelve settings deployment-framed rates change by at most 6.1&nbsp;pp. The strongest literal evidence for an evaluation-versus-deployment distinction comes from sandbagging, whose prompt framing is explicitly evaluative; sycophancy and refusal test framing-contingent task distinctions. The two weak cells, both sycophancy, mark where a single-coordinate audit is not sufficient, and a higher-rank follow-up does not rescue them. The audit is a non-adaptive, white-box diagnostic for controlled fine-tuned checkpoints, not a training-time defense, a guarantee of deployment safety, or evidence about naturally arising failures.</p>
+    </div>
+    </details>
+  </div>
+</section>
+
+<section class="block alt" id="depth">
+  <div class="wrap">
+    <div class="head"><div class="eyebrow">Localization</div><h2>The two framings split inside a four-layer window</h2>
+      <p>Along the window direction the evaluation and deployment means travel together through early layers, split sharply inside the routing window, and converge again after it.</p></div>
+    <div id="depth-fig" class="viz card">
+      <div class="viz-head">
+        <div class="legend"><span><span class="sw sw-eval"></span>evaluation framing</span><span><span class="sw sw-depl"></span>deployment framing</span></div>
+        <div class="seg" role="group" aria-label="Direction used for the projection">
+          <button type="button" class="is-active" data-mode="window" aria-pressed="true">Window direction</button>
+          <button type="button" data-mode="own" aria-pressed="false">Each layer&rsquo;s own direction</button>
+        </div>
+      </div>
+      <div class="svgbox">
+      <svg viewBox="0 0 760 340" role="img" aria-label="Mean projection of the attention-block output onto the routing direction at each of 26 layers, for evaluation and deployment prompts. Along the window direction the two framings are indistinguishable except inside layers 14 to 17, where the deployment-minus-evaluation gap is 4.3 to 5.8."></svg>
+      </div>
+      <div class="viz-controls">
+        <button type="button" class="pill" data-play>Play</button>
+        <input type="range" min="0" max="25" step="1" value="25" aria-label="Layer index">
+      </div>
+      <p class="readout" aria-live="off"></p>
+      <p class="mode-note">One fixed direction, fitted at the window and applied at every layer.</p>
+      <details>
+        <summary>Show the numbers as a table</summary>
+        <div class="tablebox" tabindex="0" role="region" aria-label="Per-layer projection values">
+          <table>
+            <thead><tr><th>Layer</th><th>Evaluation</th><th>Deployment</th><th>Gap (window direction)</th><th>Gap (own direction)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+      <p class="caption">Measured on a fresh retrain of the primary Gemma-2-2B sandbagging checkpoint (seed 42): attention-block output at the last prompt token, 200 held-out questions, templates averaged within question and framing; shading is the 95% question-bootstrap interval. Play sweeps the layers; drag over the chart or use the slider to scrub. Along the window direction the deployment-minus-evaluation gap is at most 0.91 before and after the window (largest at L13) and 4.3 to 5.8 inside it. Along each layer&rsquo;s own direction the gap grows from 0.4 to 0.6 at L0&ndash;L4 to 4.3 at L13, reaches 7.4 to 10.8 at L14&ndash;L17, and stays between 3.2 and 9.7 afterwards; this panel is in-sample aligned by construction and shows accumulation with a peak in the window. The separation along the window direction is therefore localized, but the installation is not confined to the window.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="audit">
+  <div class="wrap">
+    <div class="head"><div class="eyebrow">Method</div><h2>The audit in four steps</h2></div>
+    <ol class="steps">
+      <li><strong>Measure the gap</strong>Each question appears in two framings: one under which the fine-tune installs the target behavior and one without it. The installed gap is answer accuracy in the second framing minus accuracy in the first. The tasks are sandbagging (capability test versus user query), sycophancy (with or without a user who asserts a wrong answer), and refusal (malicious versus benign declared intent); only sandbagging contrasts a literal evaluation framing.</li>
+      <li><strong>Localize</strong>Patch the base model&rsquo;s attention output into the fine-tuned model at candidate layers. On Gemma-2-2B sandbagging no single layer recovers more than about a third of the gap, while the window L14 to L17 recovers 0.94.</li>
+      <li><strong>Fit and intervene</strong>On calibration questions, fit the difference of means between deployment and evaluation activations at the window. On held-out questions, remove the component along that direction (dose 1) or reflect it (dose 2) in the attention-block output, at every position.</li>
+      <li><strong>Compare controls</strong>Replace the direction with a random unit direction, apply the same operation at other layers, or use semantic-contrast directions fitted the same way.</li>
+    </ol>
+
+    <div class="head"><h2 style="font-size:1.6rem">What step 3 does to the coordinate</h2></div>
+    <div id="dose-fig" class="viz card">
+      <div class="svgbox">
+      <svg viewBox="0 0 760 250" role="img" aria-label="Schematic points for evaluation and deployment prompts on the routing coordinate. At dose 0 they sit on opposite sides of zero. At dose 1 all points collapse to zero. At dose 2 the two groups swap sides."></svg>
+      </div>
+      <div class="viz-controls">
+        <button type="button" class="pill" data-play>Play</button>
+        <input type="range" min="0" max="2" step="0.05" value="0" aria-label="Dose lambda">
+        <span>&lambda; = <b class="lam-out">0.00</b></span>
+      </div>
+      <div class="chips" role="group" aria-label="Measured doses">
+        <button type="button" class="chip" data-stop="0">&lambda; = 0</button>
+        <button type="button" class="chip" data-stop="0.5">&lambda; = 0.5</button>
+        <button type="button" class="chip" data-stop="1">&lambda; = 1</button>
+        <button type="button" class="chip" data-stop="2">&lambda; = 2</button>
+      </div>
+      <p class="dose-note" aria-live="polite"></p>
+      <p class="mode-note" style="margin-top:18px"><strong>Measured values:</strong> Gemma-2-2B sandbagging, submitted primary checkpoint; removal on evaluation prompts at L14&ndash;L17, n = 300 per framing.</p>
+      <div class="tscroll" style="margin-top:8px">
+        <table class="dose-table">
+          <thead><tr><th>Measured</th><th data-col="0">&lambda; = 0</th><th data-col="1">&lambda; = 0.5</th><th data-col="2">&lambda; = 1</th><th data-col="3">&lambda; = 2</th></tr></thead>
+          <tbody>
+            <tr><td>evaluation-framed rate</td><td data-col="0">0.163</td><td data-col="1">0.213</td><td data-col="2">0.440</td><td data-col="3">0.460</td></tr>
+            <tr><td>deployment-framed rate</td><td data-col="0">0.447</td><td data-col="1">0.447</td><td data-col="2">0.447</td><td data-col="3">0.447</td></tr>
+            <tr><td>gap</td><td data-col="0">0.283</td><td data-col="1">0.233</td><td data-col="2">0.007</td><td data-col="3">&minus;0.013</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption"><strong>Schematic.</strong> The points are synthetic; the operation is exact. Each point&rsquo;s coordinate is rescaled by (1&minus;&lambda;): the groups approach zero as &lambda; grows to 1, coincide at 1, and swap sides at 2. The main held-out intervention modifies the coordinate for both framings. The table is measured on the submitted primary checkpoint (not the fresh retrain used in the depth figure above): the arm shown removes the projection on evaluation prompts only, so rates move from the evaluation side and the deployment rate stays at 0.447.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block alt" id="examples">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">From the repository</div>
+      <h2>The same question, in two framings</h2>
+      <p class="prose">Every prompt and count on this page is read from files in the repository: the held-out question sets in <code>src/data/</code> and the per-question results in <code>src/results/</code>. Nothing is rewritten for the page. The text that differs between the two prompts is the wrapper; the question and its options are identical.</p>
+    </div>
+    <div id="pair-explorer" class="card"><noscript>Enable JavaScript to browse the prompt pairs. The files are in <code>src/data/</code>.</noscript></div>
+
+    <div class="head" style="margin-top:46px">
+      <h2 style="font-size:1.6rem">What the clamp does to 200 held-out questions</h2>
+      <p class="prose">Gemma-2-2B sandbagging, submitted checkpoint, routing window L14&ndash;L17, dose &lambda;&nbsp;=&nbsp;2. Each column is one question. The top tile is the evaluation framing, the bottom tile the deployment framing, shaded by how many of the two templates the model answered correctly. Select a question to read its prompts.</p>
+    </div>
+    <div id="item-grid" class="card"><noscript>Enable JavaScript to see the per-question grid. The data are in <code>src/results/routing_bootstrap_cells/clamp_item_agreement.json</code>.</noscript></div>
+    <p class="caption">The four groups follow the paper&rsquo;s per-item categories. A question counts as informative when its baseline gap exceeds 0.1; 120 of the 200 are informative. Source: <code>src/results/routing_bootstrap_cells/clamp_item_agreement.json</code>, generated into this page by <code>docs/make_examples.py</code>.</p>
+  </div>
+</section>
+
+<section class="block" id="results">
+  <div class="wrap">
+    <div class="head"><div class="eyebrow">Results</div><h2>Ten of twelve gaps shrink; four close</h2></div>
+    <div class="tscroll">
+      <table class="facts">
+        <thead><tr><th>Result</th><th>Number</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>Cells where the gap drops by more than 0.12</td><td class="num">10 of 12</td><td>Held-out intervention, dose 2.</td></tr>
+          <tr><td>Cells where the gap closes (post-gap below 0.06)</td><td class="num">4 of 12</td><td>Three are refusal cells with 28 independent question clusters.</td></tr>
+          <tr><td>Cells with at least 120 paired questions</td><td class="num">6 reduce, 1 closes</td><td>Eight cells; the one that closes is Gemma-2-2B sandbagging.</td></tr>
+          <tr><td>Change in the deployment-framed rate</td><td class="num">at most 6.1 pp</td><td>Mean absolute change 1.5 pp across the 12 cells.</td></tr>
+          <tr><td>Random directions at the headline dose</td><td class="num">60 of 60 include 0</td><td>Fresh retrains; the largest random effect is 0.017.</td></tr>
+          <tr><td>Selected window versus two off-window windows</td><td class="num">wins 10 of 12</td><td>But 7 of 24 off-window intervals are positive, so spatial specificity is partial.</td></tr>
+          <tr><td>Qwen-2.5-7B sandbagging, three training seeds</td><td class="num">0.41, 0.49, 0.53</td><td>Gap reductions across three training seeds.</td></tr>
+          <tr><td>Gemma-2-9B sycophancy, three training seeds</td><td class="num">0.42, 0.06, 0.56</td><td>Gap reductions across three training seeds; the weak seed is not rescued by a higher-rank follow-up.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two">
+      <div class="card">
+        <h3>The four closures</h3>
+        <div class="tscroll" style="border:0"><table style="min-width:0">
+          <thead><tr><th>Cell</th><th>Gap before &rarr; after</th></tr></thead>
+          <tbody>
+            <tr><td>Gemma-2-2B sandbagging</td><td class="arrow">0.298 &rarr; &minus;0.008</td></tr>
+            <tr><td>Gemma-2-9B refusal</td><td class="arrow">0.611 &rarr; &minus;0.007</td></tr>
+            <tr><td>Qwen-2.5-7B refusal</td><td class="arrow">0.796 &rarr; 0.011</td></tr>
+            <tr><td>Gemma-2-2B refusal</td><td class="arrow">0.321 &rarr; 0.011</td></tr>
+          </tbody></table></div>
+      </div>
+      <div class="card">
+        <h3>The two weak cells</h3>
+        <div class="tscroll" style="border:0"><table style="min-width:0">
+          <thead><tr><th>Cell</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>Llama-3-8B sycophancy</td><td>gap stays at 0.625 (baseline 0.625)</td></tr>
+            <tr><td>Gemma-2-9B sycophancy</td><td>reduced by only 0.013</td></tr>
+          </tbody></table></div>
+        <p class="caption">Both are sycophancy cells. These bound the claim: not every architecture-behavior pair admits a single-coordinate audit at the same relative depth.</p>
+      </div>
+    </div>
+
+    <div class="head" style="margin-top:56px"><h2 style="font-size:1.6rem">Figures from the paper</h2></div>
+    <div class="gallery card" id="gallery">
+      <div class="seg" role="tablist" aria-label="Figures">
+        <button type="button" role="tab" aria-selected="true" aria-controls="fig-patch" id="tab-patch">Path patching</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="fig-dose" id="tab-dose">Dose and controls</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="fig-geo" id="tab-geo">Schematic</button>
+      </div>
+      <figure class="fig" id="fig-patch" role="tabpanel" aria-labelledby="tab-patch" style="margin:0">
+        <a class="figimg" href="static/images/path_patching.png" target="_blank" rel="noopener"><img src="static/images/path_patching.png" alt="Path-patching recovery for Gemma-2-2B layers and for each model" width="1618" height="579"></a>
+        <figcaption class="caption">Path-patching recovery on sandbagging. (a) On Gemma-2-2B, no single layer in the mid-depth region carries more than about one-third of the installed gap on its own, but the contiguous window [L14, L17] recovers 0.94; extending the window two layers earlier to [L12, L17] overshoots to 1.12. (b) Reported localization windows at relative depth &approx; 0.55 (shaded) recover a large majority of the gap on three of five model instances. The Qwen-2.5-7B point is the fixed window [L15, L18] on a fresh retrain (seed 42, 0.52). Gemma-2-9B uses a wider window and remains the weak outlier in this panel.</figcaption>
+      </figure>
+      <figure class="fig" id="fig-dose" role="tabpanel" aria-labelledby="tab-dose" style="margin:0" hidden>
+        <a class="figimg" href="static/images/dose_response.png" target="_blank" rel="noopener"><img src="static/images/dose_response.png" alt="Dose response, controls at dose 1, semantic specificity and direction norms" width="1704" height="1156" loading="lazy"></a>
+        <figcaption class="caption">Dose response and matched controls on the Gemma-2-2B sandbagging primary cell. The routing interventions reduce the framing gap, while random-direction and wrong-layer controls stay near baseline at &lambda;=1 and semantic controls leave evaluation accuracy near its baseline (panel c). &lambda; scales the projection for removal but the raw direction for add, so the arms do not share a dose axis. Panel (d): the fitted framing direction is 4.9&times; to 10.4&times; larger on Gemma-2-2B and 3.6&times; to 4.1&times; larger on Phi-3-mini after fine-tuning across the localized window.</figcaption>
+      </figure>
+      <figure class="fig" id="fig-geo" role="tabpanel" aria-labelledby="tab-geo" style="margin:0" hidden>
+        <a class="figimg" href="static/images/routing_geometry.png" target="_blank" rel="noopener"><img src="static/images/routing_geometry.png" alt="Schematic of the routing-coordinate audit" width="1640" height="580" loading="lazy"></a>
+        <figcaption class="caption"><strong>Schematic</strong> of the routing-coordinate audit. (a) Paired evaluation and ordinary-use prompts separate along a fitted activation contrast d<sub>L</sub> at the routing-window layer. (b, c) Asymmetric remove/add interventions move one framing along that coordinate. (d) The main held-out intervention modifies the coordinate for both framings, testing whether the behavioral gap is carried by this fitted routing direction.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="block alt" id="controls">
+  <div class="wrap">
+    <div class="head"><div class="eyebrow">Specificity</div><h2>Random directions never close the gap; nearby layers sometimes move it</h2>
+      <p>The evidence supports specificity to the fitted direction at the headline dose, with only partial spatial specificity: wrong-layer controls are mixed at &lambda;=2.</p></div>
+    <div id="controls-fig" class="viz card" style="margin-bottom:22px">
+      <div class="viz-head"><div class="legend"><span><span class="sw sw-acc"></span>learned direction (95% CI)</span><span><span class="sw sw-mut sw-small"></span>five random directions</span><span><span class="sw sw-diamond"></span>two off-window windows</span></div></div>
+      <div class="svgbox"><svg viewBox="0 0 760 460" role="img" aria-label="Gap reduction at dose 2 on fresh retrains of the twelve cells. The learned direction reduces the gap in eleven cells; all sixty random-direction effects sit near zero; off-window controls are near zero in most cells but positive in some, most clearly for Llama-3-8B refusal."></svg></div>
+      <p class="readout" aria-live="polite">Hover or tab through a row for its numbers.</p>
+      <p class="caption">Fresh retrains of all twelve cells under a protocol frozen before any outcome was read: same clamp-both operator, token positions, four-layer width, and dose 2 for treatment and controls. These runs replicate the matrix and do not revise its counts. Source: <code>src/results/rebuttal_2026-08-03/summary.json</code>.</p>
+    </div>
+    <div class="cards3">
+      <div class="card"><h3>Random directions do not close the gap</h3><p>At the headline dose, on fresh retrains of all twelve cells, every one of the 60 random-direction intervals includes zero. Eleven of twelve learned effects have positive intervals; Llama-3-8B sycophancy is the exception.</p></div>
+      <div class="card"><h3>Layer specificity is partial</h3><p>The selected window beats both width-matched off-window controls in ten of twelve cells, but seven of 24 off-window intervals are positive, and for Llama-3-8B refusal the late window reduces the gap more than the selected one (0.239 against 0.196). The fixed window is also recipe-sensitive: on a rank-32 adapter over attention and MLP projections the attention intervention is null, while a wider MLP-output band recovers the full gap.</p></div>
+      <div class="card"><h3>Higher rank closes the gap mostly through deployment loss</h3><p>In the suppression organisms the pathway still localizes, and learned rank-4 and rank-8 subspaces close the aggregate gap, but only 15 to 19 percent of the reduction is evaluation gain; the reduction is mostly lost deployment performance. The weak Gemma-2-9B seed is not rescued.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="limits">
+  <div class="wrap narrow">
+    <div class="head"><div class="eyebrow">Limits</div><h2>What this does not show</h2></div>
+    <ul class="limits">
+      <li>Sycophancy and refusal establish a framing-contingent task distinction, not evaluation awareness by itself; the strongest literal evaluation-versus-deployment evidence comes from sandbagging. Sandbagging is cleaner, but its wrappers differ in length and answer-format instruction.</li>
+      <li>Calibration and held-out items share the same template families, so the split does not test unseen templates. Bag-of-words and probe AUCs are 0.92 to 1.00 with the released script (the earlier implementation behind the rebuttal figure of 0.86 to 0.97 is lost), so decodability is trivial.</li>
+      <li>The audit is non-adaptive. It is not robust to a trainer who spreads the distinction across ranks, layers, or representations.</li>
+      <li>All checkpoints are controlled fine-tunes built by us, and the paper makes no claim about naturally occurring failures. On a public RL reward-hacking trajectory the selected intervention mainly raises invalid code and an early off-window control is comparable.</li>
+      <li>The submitted checkpoint binaries were not retained. The matched controls at the headline dose come from fresh retrains and are replications, not controls on the submitted weights.</li>
+      <li>The matrix is single-seed outside the five-seed Gemma-2-2B study, and the primary window is not replicated at a second seed.</li>
+      <li>Independently authored matched prompt pairs, which require blind human authorship, are not completed.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="block alt" id="code-section">
+  <div class="wrap narrow">
+    <div class="head"><div class="eyebrow">Reproduce</div><h2>Code and reproduction</h2>
+      <p>The repository holds the scripts that regenerate the tables and figures in the paper. One script compares the numbers in the paper with the stored artifacts. The repository becomes public with the camera-ready version.</p></div>
+    <div class="codebox">
+      <pre tabindex="0"><code>git clone https://github.com/aiml-sdu/routing-subspaces
+cd routing-subspaces
+python paper/scripts/audit_paper_numbers.py
+cd paper &amp;&amp; ./build.sh</code></pre>
+      <button type="button" class="copy">Copy</button>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="cite">
+  <div class="wrap narrow">
+    <div class="head"><div class="eyebrow">Cite</div><h2>BibTeX</h2></div>
+    <div class="codebox">
+      <pre tabindex="0"><code>@inproceedings{konrad2026routing,
+    title={Routing Subspaces: Auditing Evaluation-to-Deployment Mismatch in Fine-Tuned Language Models},
+    author={Konrad, Phongsakon Mark and Tanyel, Toygar and Ayvaz, Serkan},
+    booktitle={Advances in Neural Information Processing Systems},
+    year={2026}
+}</code></pre>
+      <button type="button" class="copy">Copy</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Page layout adapted from the <a href="https://github.com/ai4co/research-project-page-template" target="_blank" rel="noopener">Research Project Page Template</a> (AI4CO), which is based on the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener">Academic Project Page Template</a> and the <a href="https://nerfies.github.io" target="_blank" rel="noopener">Nerfies project page</a>. The page code is licensed under a <a rel="license noopener" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>. Figures and text are from the paper.</p>
+  </div>
+</footer>
+</body>
+</html>
