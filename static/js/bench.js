@@ -706,20 +706,35 @@ const needleAt = (lane, turn) => {
   return lineOnTop([DIAL_X - Math.sin(angle) * 3, lane + Math.cos(angle) * 3], [DIAL_X + Math.sin(angle) * R, lane - Math.cos(angle) * R], DIAL_TOP + 0.2, P);
 };
 let x = 88.5, target = x, tip = { at: BASE + HEIGHT[0], rate: 0 };
-let frame = 0, last = 0, clock = 0, touring = true, visible = false, idleTimer = 0;
+let frame = 0, last = 0, clock = 0, touring = true, playing = true, visible = false, idleTimer = 0, scrubbing = false, shown = -1;
+const playBtn = document.getElementById("bench-play"), replayBtn = document.getElementById("bench-replay"), slider = document.getElementById("bench-dose");
+const noteDose = document.getElementById("bn-dose"), noteOp = document.getElementById("bn-op"), noteRate = document.getElementById("bn-rate");
+const MULT = ["1", "0.5", "0", "−1"];
+const OP = [
+  "unchanged: the coordinate along the fitted direction is left as it is",
+  "halved: the coordinate along the fitted direction is multiplied by 0.5",
+  "removed: the coordinate along the fitted direction is set to zero",
+  "reflected: the coordinate along the fitted direction changes sign",
+];
 const tourAt = (t) => stops[Math.floor(t / 2.4) % stops.length];
+const nearest = (cx) => clamp(Math.round((stops[0] - cx) / STEP), 0, DOSE.length - 1);
 function draw() {
   carriage.setAttribute("transform", translateAlong(P, [x, 0, 0]));
   plungerA.setAttribute("transform", translateAlong(P, [0, 0, tip.at]));
-  const rate = (tip.at - BASE) / PX_PER_RATE;
-  needleA.setAttribute("d", needleAt(LANE_A, rate));
-  const index = blockUnder(x);
-  const text = index < 0
-    ? "between doses"
-    : "dose " + DOSE[index] + " · eval " + EVAL[index].toFixed(3) + " · deploy " + DEPLOY.toFixed(3) + " · gap " + GAP[index].toFixed(3);
+  needleA.setAttribute("d", needleAt(LANE_A, (tip.at - BASE) / PX_PER_RATE));
+  const index = nearest(x);
+  const text = "dose " + DOSE[index] + " · eval " + EVAL[index].toFixed(3) + " · deploy " + DEPLOY.toFixed(3) + " · gap " + GAP[index].toFixed(3);
   if (readout.textContent !== text) readout.textContent = text;
-  stage.setAttribute("aria-valuenow", String(index < 0 ? 0 : index));
+  stage.setAttribute("aria-valuenow", String(index));
   stage.setAttribute("aria-valuetext", text);
+  if (!scrubbing) slider.value = String(clamp((stops[0] - x) / STEP, 0, DOSE.length - 1).toFixed(3));
+  if (index !== shown) {
+    shown = index;
+    if (noteDose) noteDose.textContent = "λ = " + DOSE[index] + "   (coordinate × " + MULT[index] + ")";
+    if (noteOp) noteOp.textContent = OP[index];
+    if (noteRate) noteRate.textContent = "evaluation-framed " + EVAL[index].toFixed(3) + ", deployment-framed " + DEPLOY.toFixed(3) + ", gap " + GAP[index].toFixed(3);
+    slider.setAttribute("aria-valuetext", "dose " + DOSE[index] + ", gap " + GAP[index].toFixed(3));
+  }
 }
 function tick(now) {
   const dt = last ? Math.min((now - last) / 1000, 1 / 30) : 1 / 60;
@@ -737,9 +752,28 @@ function tick(now) {
   frame = visible && !settled ? requestAnimationFrame(tick) : 0;
 }
 const run = () => { if (!frame && visible) { last = 0; frame = requestAnimationFrame(tick); } };
-const steer = (next) => { touring = false; target = clamp(next, REACH[0], REACH[1]); clearTimeout(idleTimer); idleTimer = setTimeout(() => { touring = !still.matches; clock = 0; run(); }, 3600); run(); };
+const setPlaying = (on) => {
+  playing = on && !still.matches;
+  touring = playing;
+  clearTimeout(idleTimer);
+  if (playBtn) { playBtn.setAttribute("aria-pressed", String(playing)); playBtn.setAttribute("aria-label", playing ? "Pause the tour" : "Play the tour"); playBtn.dataset.state = playing ? "playing" : "paused"; }
+  run();
+};
+const steer = (next) => {
+  touring = false;
+  target = clamp(next, REACH[0], REACH[1]);
+  clearTimeout(idleTimer);
+  if (playing) idleTimer = setTimeout(() => { touring = !still.matches; clock = 0; run(); }, 3600);
+  run();
+};
 new IntersectionObserver((entries) => { visible = entries[entries.length - 1].isIntersecting; if (visible) run(); }, { rootMargin: "120px 0px" }).observe(stage);
-if (still.matches) touring = false;
+if (still.matches) { playing = false; touring = false; }
+if (playBtn) { playBtn.dataset.state = playing ? "playing" : "paused"; playBtn.setAttribute("aria-pressed", String(playing)); }
+if (playBtn) playBtn.addEventListener("click", () => setPlaying(!playing));
+if (replayBtn) replayBtn.addEventListener("click", () => { x = target = stops[0]; tip.at = BASE + HEIGHT[0]; tip.rate = 0; clock = 0; setPlaying(true); draw(); });
+slider.addEventListener("input", () => { scrubbing = true; playing = false; touring = false; clearTimeout(idleTimer); if (playBtn) { playBtn.setAttribute("aria-pressed", "false"); playBtn.dataset.state = "paused"; playBtn.setAttribute("aria-label", "Play the tour"); } target = clamp(stops[0] - parseFloat(slider.value) * STEP, REACH[0], REACH[1]); run(); });
+slider.addEventListener("change", () => { scrubbing = false; });
+slider.addEventListener("pointerup", () => { scrubbing = false; });
 stage.addEventListener("pointermove", (event) => {
   const box = svg.getBoundingClientRect();
   const share = clamp(((event.clientX - box.left) / box.width - 0.2) / 0.6, 0, 1);
@@ -747,7 +781,7 @@ stage.addEventListener("pointermove", (event) => {
 });
 stage.addEventListener("pointerleave", () => steer(target));
 stage.addEventListener("keydown", (event) => {
-  const here = stops.reduce((best, stop, index) => (Math.abs(stop - target) < Math.abs(stops[best] - target) ? index : best), 0);
+  const here = nearest(target);
   let to = null;
   if (event.key === "ArrowRight" || event.key === "ArrowUp") to = Math.min(stops.length - 1, here + 1);
   if (event.key === "ArrowLeft" || event.key === "ArrowDown") to = Math.max(0, here - 1);
