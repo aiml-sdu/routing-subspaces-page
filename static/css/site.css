@@ -248,3 +248,16 @@ details.abstract > summary { margin-bottom: 10px; }
 .hero-fig .svgbox svg { min-width: 0; }
 .btn.is-off { opacity: .6; cursor: default; }
 .btn.is-off:hover { transform: none; box-shadow: none; }
+
+/* ---------- routing bench (Anatomy figure, generated into static/css/bench.css) ---------- */
+.bench-wrap { margin: 0 0 56px; }
+.bench .iso-figure { margin: 0; }
+.bench .iso-plate { border-radius: 18px; box-shadow: 0 0 0 1px var(--line), var(--shadow); padding: 48px 20px; }
+.bench[data-theme="dark"] { --anatomy-card: var(--surface); --anatomy-paper: var(--surface); }
+.bench[data-theme="light"] { --anatomy-card: var(--surface); --anatomy-paper: var(--surface); }
+.bench .iso-stage { cursor: ew-resize; touch-action: pan-y; }
+.bench .iso-stage:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 10px; }
+/* colour is the subject here: evaluation is blue and deployment orange everywhere on the page */
+.bench .iso-svg [data-part="needleA"], .bench .iso-svg [data-part="plungerA"] path { stroke: var(--eval) !important; }
+.bench .iso-svg [data-part="needleB"], .bench .iso-svg [data-part="plungerB"] path { stroke: var(--depl) !important; }
+.head .lede-sm { color: var(--ink-2); max-width: 720px; margin: 10px 0 0; }
