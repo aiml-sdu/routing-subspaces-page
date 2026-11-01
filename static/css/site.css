@@ -357,3 +357,24 @@ h1, h2, h3 { color: var(--ink); letter-spacing: -.012em; font-weight: 700; }
 .chip.is-active { background: var(--ink); color: var(--bg); }
 .two { margin-top: 26px; }
 @media (max-width: 520px) { .demo .iso-plate { padding-bottom: 44px; } .demo .iso-plate-corner[data-corner="hint"] { display: none; } }
+
+/* animated paper figures */
+.pfig { margin: 0 0 26px; }
+.pfig .fig-title { font: 600 1.05rem var(--sans); color: var(--ink); margin: 0 0 4px; }
+.pf-intro { font-size: 15.5px; color: var(--muted); margin: 0 0 8px; }
+.pfig .svgbox svg { min-width: 560px; }
+.pfig .scrub-ticks .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--muted); opacity: .6; top: -13px; }
+.pf-noscrub .scrub input { opacity: .35; }
+.pf-chips { margin: 8px 0 0; }
+.pf-static { margin-top: 10px; font-size: 14.5px; }
+.pf-static summary { cursor: pointer; color: var(--accent); }
+.pf-static .figimg { display: block; margin-top: 10px; }
+.pf-static img { border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+
+/* icon links under the TL;DR */
+.iconlinks { display: flex; flex-wrap: wrap; gap: 8px 10px; margin: 4px 0 8px; }
+.iconlinks a, .iconlinks span.off { display: inline-flex; align-items: center; gap: 8px; font: 500 15px var(--sans); color: var(--ink); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px 7px 11px; background: var(--surface); }
+.iconlinks a:hover { border-color: var(--muted); }
+.iconlinks svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.iconlinks .off { color: var(--muted); cursor: default; }
+.iconlinks small { font: 400 12.5px var(--sans); color: var(--muted); }

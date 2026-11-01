@@ -23,7 +23,9 @@
   <link rel="stylesheet" href="static/css/site.css?v=9">
   <link rel="stylesheet" href="static/css/bench.css?v=1">
   <script defer src="static/js/data.js?v=8"></script>
+  <script defer src="static/js/paper-data.js?v=1"></script>
   <script defer src="static/js/viz.js?v=8"></script>
+  <script defer src="static/js/paper-figs.js?v=1"></script>
   <script defer src="static/js/results-viz.js?v=8"></script>
   <script defer src="static/js/examples.js?v=8"></script>
   <script defer src="static/js/examples-view.js?v=8"></script>
@@ -54,7 +56,13 @@
     <p class="byline"><span class="people">Phongsakon Mark Konrad<sup>1,*</sup>, Toygar Tanyel<sup>2</sup>, Serkan Ayvaz<sup>1</sup></span><span class="sep">/</span><span class="when">NeurIPS 2026 &middot; Poster</span></p>
     <p class="affil"><sup>1</sup>Centre for Industrial Software, University of Southern Denmark &nbsp;&middot;&nbsp; <sup>2</sup>Promake, Newark, DE, USA &nbsp;&middot;&nbsp; <sup>*</sup>Now at University of T&uuml;bingen</p>
     <p class="lead"><b>TL;DR</b> Fine-tuning can make a model answer the same question differently depending on how it is framed. In controlled checkpoints, one fitted direction in a mid-depth attention window carries much of that gap. Modifying that single coordinate on held-out prompts shrinks the gap by more than 0.12 in ten of twelve settings and closes it in four; random directions at the same dose do not. It is a diagnostic for controlled checkpoints, not a defense. Drag the dose below to see what the intervention does.</p>
-    <p class="links">Paper: <a href="https://openreview.net/forum?id=Lsf8vcSdAI" target="_blank" rel="noopener">openreview.net/forum?id=Lsf8vcSdAI</a><br>arXiv: <a href="https://arxiv.org/abs/2607.20436" target="_blank" rel="noopener">arxiv.org/abs/2607.20436</a><br>Code: <span class="muted">released with the camera-ready version</span> &middot; <a href="#examples">Browse prompts</a> &middot; <a href="#cite">BibTeX</a></p>
+    <div class="iconlinks" role="list">
+      <a role="listitem" href="https://openreview.net/forum?id=Lsf8vcSdAI" target="_blank" rel="noopener" aria-label="Paper on OpenReview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h6M10 17h6"/></svg>Paper</a>
+      <a role="listitem" href="https://arxiv.org/abs/2607.20436" target="_blank" rel="noopener" aria-label="arXiv abstract"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 12h8M8 15h5"/></svg>arXiv</a>
+      <span role="listitem" class="off" aria-disabled="true" title="The repository becomes public with the camera-ready version."><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 5l-4 14"/></svg>Code <small>soon</small></span>
+      <a role="listitem" href="#examples" aria-label="Browse the prompt pairs"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg>Prompts</a>
+      <a role="listitem" href="#cite" aria-label="BibTeX citation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7H5v6h4c0 3-1 4-4 5M19 7h-4v6h4c0 3-1 4-4 5"/></svg>BibTeX</a>
+    </div>
   </div>
   <div class="wrap wide">
     <figure class="demo" id="demo">
@@ -245,26 +253,29 @@
       </div>
     </div>
 
-    <div class="head" style="margin-top:56px"><h2 style="font-size:1.6rem">Figures from the paper</h2></div>
-    <div class="gallery card" id="gallery">
-      <div class="seg" role="tablist" aria-label="Figures">
-        <button type="button" role="tab" aria-selected="true" aria-controls="fig-patch" id="tab-patch">Path patching</button>
-        <button type="button" role="tab" aria-selected="false" aria-controls="fig-dose" id="tab-dose">Dose and controls</button>
-        <button type="button" role="tab" aria-selected="false" aria-controls="fig-geo" id="tab-geo">Schematic</button>
-      </div>
-      <figure class="fig" id="fig-patch" role="tabpanel" aria-labelledby="tab-patch" style="margin:0">
-        <a class="figimg" href="static/images/path_patching.png" target="_blank" rel="noopener"><img src="static/images/path_patching.png" alt="Path-patching recovery for Gemma-2-2B layers and for each model" width="1618" height="579"></a>
-        <figcaption class="caption">Path-patching recovery on sandbagging. (a) On Gemma-2-2B, no single layer in the mid-depth region carries more than about one-third of the installed gap on its own, but the contiguous window [L14, L17] recovers 0.94; extending the window two layers earlier to [L12, L17] overshoots to 1.12. (b) Reported localization windows at relative depth &approx; 0.55 (shaded) recover a large majority of the gap on three of five model instances. The Qwen-2.5-7B point is the fixed window [L15, L18] on a fresh retrain (seed 42, 0.52). Gemma-2-9B uses a wider window and remains the weak outlier in this panel.</figcaption>
-      </figure>
-      <figure class="fig" id="fig-dose" role="tabpanel" aria-labelledby="tab-dose" style="margin:0" hidden>
-        <a class="figimg" href="static/images/dose_response.png" target="_blank" rel="noopener"><img src="static/images/dose_response.png" alt="Dose response, controls at dose 1, semantic specificity and direction norms" width="1704" height="1156" loading="lazy"></a>
-        <figcaption class="caption">Dose response and matched controls on the Gemma-2-2B sandbagging primary cell. The routing interventions reduce the framing gap, while random-direction and wrong-layer controls stay near baseline at &lambda;=1 and semantic controls leave evaluation accuracy near its baseline (panel c). &lambda; scales the projection for removal but the raw direction for add, so the arms do not share a dose axis. Panel (d): the fitted framing direction is 4.9&times; to 10.4&times; larger on Gemma-2-2B and 3.6&times; to 4.1&times; larger on Phi-3-mini after fine-tuning across the localized window.</figcaption>
-      </figure>
-      <figure class="fig" id="fig-geo" role="tabpanel" aria-labelledby="tab-geo" style="margin:0" hidden>
-        <a class="figimg" href="static/images/routing_geometry.png" target="_blank" rel="noopener"><img src="static/images/routing_geometry.png" alt="Schematic of the routing-coordinate audit" width="1640" height="580" loading="lazy"></a>
-        <figcaption class="caption"><strong>Schematic</strong> of the routing-coordinate audit. (a) Paired evaluation and ordinary-use prompts separate along a fitted activation contrast d<sub>L</sub> at the routing-window layer. (b, c) Asymmetric remove/add interventions move one framing along that coordinate. (d) The main held-out intervention modifies the coordinate for both framings, testing whether the behavioral gap is carried by this fitted routing direction.</figcaption>
-      </figure>
-    </div>
+    <div class="head" style="margin-top:56px"><h2 style="font-size:1.6rem">The paper&rsquo;s figures, animated</h2>
+      <p class="lede-sm">The three figures of the paper, redrawn so they move. Play steps through them; drag the scrubber or press a stage to stop and look. The numbers are the ones the paper&rsquo;s figure script plots.</p></div>
+    <figure class="viz card pfig" aria-labelledby="pf-patch-t">
+      <figcaption class="fig-title" id="pf-patch-t">Where the installed gap is recovered</figcaption>
+      <p class="pf-intro">Patch layers of the base model into the fine-tuned model and see how much of the gap returns. Single layers first, then contiguous windows, then five models.</p>
+      <div id="pf-patch"><noscript>Enable JavaScript for the animated figure; the static version is below.</noscript></div>
+      <p class="caption">Path-patching recovery on sandbagging. (a) On Gemma-2-2B, no single layer in the mid-depth region carries more than about one-third of the installed gap on its own, but the contiguous window [L14, L17] recovers 0.94; extending the window two layers earlier to [L12, L17] overshoots to 1.12. (b) Reported localization windows at relative depth &approx; 0.55 (shaded) recover a large majority of the gap on three of five model instances. The Qwen-2.5-7B point is the fixed window [L15, L18] on a fresh retrain (seed 42, 0.52). Gemma-2-9B uses a wider window and remains the weak outlier in this panel.</p>
+      <details class="pf-static"><summary>Static version from the paper</summary><a class="figimg" href="static/images/path_patching.png" target="_blank" rel="noopener"><img src="static/images/path_patching.png" alt="Path-patching recovery for Gemma-2-2B layers and for each model" width="1618" height="579"></a></details>
+    </figure>
+    <figure class="viz card pfig" aria-labelledby="pf-dose-t">
+      <figcaption class="fig-title" id="pf-dose-t">Dose response and matched controls</figcaption>
+      <p class="pf-intro">Gemma-2-2B sandbagging, primary cell. Step through the four panels of the figure; in the first, drag the dose.</p>
+      <div id="pf-dose"><noscript>Enable JavaScript for the animated figure; the static version is below.</noscript></div>
+      <p class="caption">Dose response and matched controls on the Gemma-2-2B sandbagging primary cell. The routing interventions reduce the framing gap, while random-direction and wrong-layer controls stay near baseline at &lambda;=1 and semantic controls leave evaluation accuracy near its baseline (panel c). &lambda; scales the projection for removal but the raw direction for add, so the arms do not share a dose axis. Panel (d): the fitted framing direction is 4.9&times; to 10.4&times; larger on Gemma-2-2B and 3.6&times; to 4.1&times; larger on Phi-3-mini after fine-tuning across the localized window.</p>
+      <details class="pf-static"><summary>Static version from the paper</summary><a class="figimg" href="static/images/dose_response.png" target="_blank" rel="noopener"><img src="static/images/dose_response.png" alt="Dose response, controls at dose 1, semantic specificity and direction norms" width="1704" height="1156" loading="lazy"></a></details>
+    </figure>
+    <figure class="viz card pfig" aria-labelledby="pf-geo-t">
+      <figcaption class="fig-title" id="pf-geo-t">The routing-coordinate audit, on synthetic points</figcaption>
+      <p class="pf-intro">Press a stage, or drag the strength of the intervention, to move the clusters.</p>
+      <div id="pf-geo"><noscript>Enable JavaScript for the animated figure; the static version is below.</noscript></div>
+      <p class="caption"><strong>Schematic</strong> of the routing-coordinate audit. (a) Paired evaluation and ordinary-use prompts separate along a fitted activation contrast d<sub>L</sub> at the routing-window layer. (b, c) Asymmetric remove/add interventions move one framing along that coordinate. (d) The main held-out intervention modifies the coordinate for both framings, testing whether the behavioral gap is carried by this fitted routing direction.</p>
+      <details class="pf-static"><summary>Static version from the paper</summary><a class="figimg" href="static/images/routing_geometry.png" target="_blank" rel="noopener"><img src="static/images/routing_geometry.png" alt="Schematic of the routing-coordinate audit" width="1640" height="580" loading="lazy"></a></details>
+    </figure>
   </div>
 </section>
 
