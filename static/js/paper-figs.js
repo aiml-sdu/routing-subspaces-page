@@ -32,7 +32,13 @@
     if (post) { var s2 = el("tspan", { dy: -3 }, t); s2.textContent = post; }
     return t;
   }
-  function fmt(v, d) { return v.toFixed(d === undefined ? 2 : d).replace("-", "−"); }
+  function isNarrow(root) { return root.clientWidth > 0 && root.clientWidth < 560; }
+  function vb(h, w, hh) { h.svg.setAttribute("viewBox", "0 0 " + w + " " + hh); }
+  function onNarrowChange(root, draw) {
+    var was = isNarrow(root);
+    if (window.ResizeObserver) { new ResizeObserver(function () { var n = isNarrow(root); if (n !== was) { was = n; draw(); } }).observe(root); }
+  }
+  function fmt(v, d) { var r = v.toFixed(d === undefined ? 2 : d); if (parseFloat(r) === 0) { r = r.replace("-", ""); } return r.replace("-", "−"); }
   function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
   function lerp(a, b, t) { return a + (b - a) * t; }
   function ease(t) { t = clamp(t, 0, 1); return 1 - Math.pow(1 - t, 3); }
@@ -108,9 +114,10 @@
 
     function draw() {
       h.clear();
-      var svg = h.svg, a = clamp(Math.round(t), 0, N), ab = Math.min(a, NB - 1);
+      var narrow = isNarrow(root); vb(h, narrow ? 430 : 760, narrow ? 640 : 312);
+      var ga = el("g", {}, h.svg), gb = el("g", { transform: narrow ? "translate(-400,318)" : "translate(0,0)" }, h.svg), svg = ga, a = clamp(Math.round(t), 0, N), ab = Math.min(a, NB - 1);
       txt(svg, 78, 18, "(a) Gemma-2-2B sandbagging: layer versus window", { "font-weight": 600, "font-size": 13 });
-      txt(svg, 478, 18, "(b) sandbagging, five models", { "font-weight": 600, "font-size": 13 });
+      txt(gb, 478, 18, "(b) sandbagging, five models", { "font-weight": 600, "font-size": 13 });
       /* layer ribbon: which layers are patched into the fine-tuned model */
       txt(svg, 78, 42, "layers patched", { fill: MUTED, "font-size": 11 });
       for (var L = 12; L <= 17; L++) {
@@ -135,6 +142,7 @@
       txt(svg, 110, 64, "single layer", { fill: MUTED, "font-size": 11, "font-style": "italic" });
       txt(svg, 290, 64, "contiguous window", { fill: EVAL, "font-size": 11, "font-style": "italic" });
       /* panel b: band, axes, points */
+      svg = gb;
       el("rect", { x: bx.xs(0.5), y: 66, width: bx.xs(0.62) - bx.xs(0.5), height: 186, fill: EVAL, "fill-opacity": 0.08 }, svg);
       txt(svg, (bx.xs(0.5) + bx.xs(0.62)) / 2, 80, "depth ≈ 0.55", { "text-anchor": "middle", fill: EVAL, "font-size": 11, "font-style": "italic" });
       axisY(svg, bx.x0, 66, 252, bx.ys, [0.4, 0.6, 0.8, 1.0], function (v) { return fmt(v, 1); }, "recovery fraction");
@@ -181,7 +189,7 @@
     h.replay.addEventListener("click", function () { t = target = 0; playing = true; h.playing(true); hold = 0; run.wake(); draw(); });
     h.slider.addEventListener("input", function () { playing = false; h.playing(false); target = Math.round(parseFloat(h.slider.value)); t = parseFloat(h.slider.value); run.wake(); draw(); });
     if (reduce) { h.playing(false); }
-    draw();
+    draw(); onNarrowChange(root, draw);
   }
 
   /* ============================================================ 2. Dose response and controls */
@@ -231,31 +239,34 @@
     }
     function draw() {
       h.clear();
-      var svg = h.svg;
+      var narrow = isNarrow(root); vb(h, narrow ? 430 : 760, narrow && stage === 0 ? 590 : 340);
+      var svg = h.svg, BX0 = narrow ? 160 : 200, BXW = narrow ? 240 : 480;
       Array.prototype.forEach.call(h.chips, function (c, i) { c.classList.toggle("is-active", i === stage); });
       h.slider.disabled = stage !== 0;
       root.classList.toggle("pf-noscrub", stage !== 0);
       if (stage === 0) {
-        var Lx = { x0: 90, x1: 350 }, Rx = { x0: 440, x1: 700 };
+        var Lx = { x0: 90, x1: 350 }, Rx = narrow ? { x0: 90, x1: 350 } : { x0: 440, x1: 700 };
+        var Rg = narrow ? el("g", { transform: "translate(0,270)" }, svg) : svg;
         var ysc = function (v) { return 262 - (v + 0.03) / 0.33 * 200; };
         var xl = function (x) { return Lx.x0 + (x / 2) * (Lx.x1 - Lx.x0); }, xr = function (x) { return Rx.x0 + (x / 2) * (Rx.x1 - Rx.x0); };
         txt(svg, 90, 22, "(a) dose response, Gemma-2-2B sandbagging, L14–L17", { "font-weight": 600, "font-size": 13 });
         axisY(svg, 90, 56, 262, ysc, [0, 0.05, 0.1, 0.15, 0.2, 0.25], function (v) { return fmt(v); }, "evaluation/deployment gap");
-        [[Lx, xl, "projection dose λ"], [Rx, xr, "multiple of the raw direction d_L"]].forEach(function (pn) {
-          var pa = pn[0], xs = pn[1];
+        [[Lx, xl, "projection dose λ", svg], [Rx, xr, "multiple of the raw direction d_L", Rg]].forEach(function (pn) {
+          var pa = pn[0], xs = pn[1], svg = pn[3];
           el("line", { x1: pa.x0, y1: ysc(0), x2: pa.x1, y2: ysc(0), stroke: MUTED, "stroke-opacity": 0.6 }, svg);
           el("line", { x1: pa.x0, y1: ysc(REM[0]), x2: pa.x1, y2: ysc(REM[0]), stroke: INK, "stroke-dasharray": "5 4", "stroke-opacity": 0.5 }, svg);
           X.forEach(function (x) { el("line", { x1: xs(x), y1: 262, x2: xs(x), y2: 267, stroke: MUTED }, svg); txt(svg, xs(x), 282, x === 0.5 ? ".5" : String(x), { "text-anchor": "middle", fill: MUTED, "font-size": 11 }); });
           txt(svg, (pa.x0 + pa.x1) / 2, 306, pn[2], { "text-anchor": "middle", fill: MUTED, "font-size": 12 });
           el("line", { x1: xs(lam), y1: 56, x2: xs(lam), y2: 262, stroke: INK, "stroke-opacity": 0.18 }, svg);
         });
+        if (narrow) { axisY(Rg, 90, 56, 262, ysc, [0, 0.05, 0.1, 0.15, 0.2, 0.25], function (v) { return fmt(v); }, "evaluation/deployment gap"); }
         txt(svg, Lx.x0 + 6, ysc(REM[0]) - 6, "baseline gap", { fill: MUTED, "font-size": 11, "font-style": "italic" });
         curve(svg, xl, ysc, REM, EVAL, "c", lam);
         curve(svg, xl, ysc, CLP, OK, "t", lam);
-        curve(svg, xr, ysc, ADD, DEPL, "s", lam);
+        curve(Rg, xr, ysc, ADD, DEPL, "s", lam);
         txt(svg, Lx.x1 - 4, ysc(0.075), "remove eval.", { "text-anchor": "end", fill: EVAL, "font-size": 12, "font-weight": 600 });
         txt(svg, Lx.x1 - 4, ysc(0.045), "joint", { "text-anchor": "end", fill: OK, "font-size": 12, "font-weight": 600 });
-        txt(svg, Rx.x1 - 4, ysc(0.075), "add on deployment", { "text-anchor": "end", fill: DEPL, "font-size": 12, "font-weight": 600 });
+        txt(Rg, Rx.x1 - 4, ysc(0.075), "add on deployment", { "text-anchor": "end", fill: DEPL, "font-size": 12, "font-weight": 600 });
         var exact = X.indexOf(Math.round(lam * 100) / 100) >= 0;
         h.say(0, "(a) dose response");
         h.say(1, "λ = " + fmt(lam) + "   remove " + fmt(interp(REM, lam), 3) + ",  joint " + fmt(interp(CLP, lam), 3) + ",  add " + fmt(interp(ADD, lam), 3));
@@ -263,34 +274,35 @@
         h.slider.value = String(lam.toFixed(3));
       } else if (stage === 1) {
         txt(svg, 90, 22, "(b) gap at λ = 1, Gemma-2-2B sandbagging", { "font-weight": 600, "font-size": 13 });
-        var sc1 = function (v) { return 200 + (v + 0.04) / 0.41 * 480; };
-        hbars(svg, CTL.map(function (r) { return { label: r[0].replace(/\$/g, ""), v: r[1], hi: r[2] === "model", fmt: "+" + fmt(r[1]) }; }), sc1, 200, 690, REM[0], "baseline gap " + fmt(REM[0], 3), true);
+        var sc1 = function (v) { return BX0 + (v + 0.04) / 0.41 * BXW; };
+        hbars(svg, CTL.map(function (r) { return { label: r[0].replace(/\$/g, ""), v: r[1], hi: r[2] === "model", fmt: "+" + fmt(r[1]) }; }), sc1, BX0, 690, REM[0], "baseline gap " + fmt(REM[0], 3), true);
         [0, 0.1, 0.2, 0.3].forEach(function (v) { el("line", { x1: sc1(v), y1: 252, x2: sc1(v), y2: 257, stroke: MUTED }, svg); txt(svg, sc1(v), 272, fmt(v, 1), { "text-anchor": "middle", fill: MUTED, "font-size": 11 }); });
-        txt(svg, 445, 300, "gap at λ = 1", { "text-anchor": "middle", fill: MUTED, "font-size": 12 });
+        txt(svg, BX0 + BXW / 2, 300, "gap at λ = 1", { "text-anchor": "middle", fill: MUTED, "font-size": 12 });
         h.say(0, "(b) matched-dose controls");
         h.say(1, "learned direction: " + fmt(CTL[1][1], 3) + " (remove), " + fmt(CTL[0][1], 3) + " (joint)");
         h.say(2, "random direction " + fmt(CTL[2][1], 3) + ", non-routing L6 " + fmt(CTL[3][1], 3) + ", non-routing L22 " + fmt(CTL[4][1], 3) + ": the gap stays near baseline");
       } else if (stage === 2) {
-        txt(svg, 90, 22, "(c) semantic specificity, evaluation accuracy after remove at λ = 2", { "font-weight": 600, "font-size": 13 });
-        var sc2 = function (v) { return 200 + v / 0.55 * 480; };
-        hbars(svg, SPEC.map(function (r, i) { return { label: r[0], v: r[1], hi: i === 0, fmt: fmt(r[1]) }; }), sc2, 200, 690, 0.183, "evaluation baseline 0.18", true);
+        txt(svg, 90, 22, "(c) semantic specificity", { "font-weight": 600, "font-size": 13 });
+        var sc2 = function (v) { return BX0 + v / 0.55 * BXW; };
+        hbars(svg, SPEC.map(function (r, i) { return { label: r[0], v: r[1], hi: i === 0, fmt: fmt(r[1]) }; }), sc2, BX0, 690, 0.183, "evaluation baseline 0.18", true);
         [0, 0.1, 0.2, 0.3, 0.4, 0.5].forEach(function (v) { el("line", { x1: sc2(v), y1: 252, x2: sc2(v), y2: 257, stroke: MUTED }, svg); txt(svg, sc2(v), 272, fmt(v, 1), { "text-anchor": "middle", fill: MUTED, "font-size": 11 }); });
-        txt(svg, 445, 300, "evaluation accuracy after remove at λ = 2", { "text-anchor": "middle", fill: MUTED, "font-size": 12 });
+        txt(svg, BX0 + BXW / 2, 300, "evaluation accuracy after remove at λ = 2", { "text-anchor": "middle", fill: MUTED, "font-size": 12 });
         h.say(0, "(c) semantic controls");
         h.say(1, "routing direction " + fmt(SPEC[0][1]) + "; the four semantic contrasts " + fmt(Math.min(SPEC[1][1], SPEC[2][1], SPEC[3][1], SPEC[4][1])) + " to " + fmt(Math.max(SPEC[1][1], SPEC[2][1], SPEC[3][1], SPEC[4][1])));
         h.say(2, "semantic directions leave evaluation accuracy near its baseline");
       } else {
         txt(svg, 90, 22, "(d) direction norms, base versus fine-tuned", { "font-weight": 600, "font-size": 13 });
         var ylog = function (v) { return 262 - (Math.log10(v) - Math.log10(0.5)) / (Math.log10(85) - Math.log10(0.5)) * 200; };
-        [1, 10].forEach(function (v) { el("line", { x1: 90, y1: ylog(v), x2: 700, y2: ylog(v), stroke: GRID, "stroke-dasharray": "3 4" }, svg); txt(svg, 82, ylog(v) + 4, String(v), { "text-anchor": "end", fill: MUTED, "font-size": 11 }); });
-        el("line", { x1: 90, y1: 56, x2: 90, y2: 262, stroke: MUTED }, svg);
-        txt(svg, 0, 0, "direction norm, log scale", { transform: "translate(40,159) rotate(-90)", "text-anchor": "middle", fill: MUTED, "font-size": 12 });
-        var slot = 0, bwid = 26, names = Object.keys(GEO), nTot = 8;
+        var slotW = narrow ? 40 : 74, bwid = narrow ? 15 : 26, ax0 = narrow ? 52 : 90, off0 = narrow ? 6 : 16, sepOff = narrow ? 8 : 20, axEnd = ax0 + slotW * 8 + (narrow ? 16 : 28);
+        [1, 10].forEach(function (v) { el("line", { x1: ax0, y1: ylog(v), x2: axEnd, y2: ylog(v), stroke: GRID, "stroke-dasharray": "3 4" }, svg); txt(svg, ax0 - 8, ylog(v) + 4, String(v), { "text-anchor": "end", fill: MUTED, "font-size": 11 }); });
+        el("line", { x1: ax0, y1: 56, x2: ax0, y2: 262, stroke: MUTED }, svg);
+        txt(svg, 0, 0, "direction norm, log scale", { transform: "translate(" + (narrow ? 14 : 40) + ",159) rotate(-90)", "text-anchor": "middle", fill: MUTED, "font-size": 12 });
+        var slot = 0, names = Object.keys(GEO);
         names.forEach(function (nm, gi) {
           var g = GEO[nm];
-          txt(svg, 90 + (slot + 2) * 74, 50, nm, { "text-anchor": "middle", "font-style": "italic", fill: MUTED, "font-size": 12 });
+          txt(svg, ax0 + (slot + 2) * slotW, 50, nm, { "text-anchor": "middle", "font-style": "italic", fill: MUTED, "font-size": 12 });
           g.layers.forEach(function (Ln, i) {
-            var x = 106 + slot * 74, s = ease(p * 1.5 - slot * 0.08);
+            var x = ax0 + off0 + slot * slotW, s = ease(p * 1.5 - slot * 0.08);
             [[g.base[i], CTRL, 0.45, 0], [g.fused[i], EVAL, 0.9, bwid + 3]].forEach(function (b) {
               var top = ylog(0.5 + (b[0] - 0.5) * s);
               el("rect", { x: x + b[3], y: top, width: bwid, height: Math.max(0.5, 262 - top), fill: b[1], "fill-opacity": b[2] }, svg);
@@ -299,10 +311,11 @@
             txt(svg, x + bwid + 1.5, 280, Ln, { "text-anchor": "middle", fill: MUTED, "font-size": 11 });
             slot++;
           });
-          if (gi === 0) { el("line", { x1: 106 + slot * 74 - 20, y1: 56, x2: 106 + slot * 74 - 20, y2: 262, stroke: GRID }, svg); }
+          if (gi === 0) { el("line", { x1: ax0 + off0 + slot * slotW - sepOff, y1: 56, x2: ax0 + off0 + slot * slotW - sepOff, y2: 262, stroke: GRID }, svg); }
         });
-        el("rect", { x: 300, y: 296, width: 12, height: 12, fill: CTRL, "fill-opacity": 0.45 }, svg); txt(svg, 318, 306, "base", { "font-size": 12, fill: MUTED });
-        el("rect", { x: 380, y: 296, width: 12, height: 12, fill: EVAL, "fill-opacity": 0.9 }, svg); txt(svg, 398, 306, "fine-tuned", { "font-size": 12, fill: MUTED });
+        var lx = narrow ? 120 : 300;
+        el("rect", { x: lx, y: 296, width: 12, height: 12, fill: CTRL, "fill-opacity": 0.45 }, svg); txt(svg, lx + 18, 306, "base", { "font-size": 12, fill: MUTED });
+        el("rect", { x: lx + 80, y: 296, width: 12, height: 12, fill: EVAL, "fill-opacity": 0.9 }, svg); txt(svg, lx + 98, 306, "fine-tuned", { "font-size": 12, fill: MUTED });
         var r0 = GEO["Gemma-2-2B"], rg = r0.fused.map(function (v, i) { return v / r0.base[i]; }), r1 = GEO["Phi-3-mini"], rp = r1.fused.map(function (v, i) { return v / r1.base[i]; });
         h.say(0, "(d) direction norms");
         h.say(1, "Gemma-2-2B L14–L17: " + fmt(Math.min.apply(null, rg), 1) + "× to " + fmt(Math.max.apply(null, rg), 1) + "×;  Phi-3-mini L18–L21: " + fmt(Math.min.apply(null, rp), 1) + "× to " + fmt(Math.max.apply(null, rp), 1) + "×");
@@ -326,7 +339,7 @@
     h.replay.addEventListener("click", function () { playing = true; h.playing(true); go(0); });
     h.slider.addEventListener("input", function () { playing = false; h.playing(false); sweep = false; lamT = parseFloat(h.slider.value); lam = lamT; run.wake(); draw(); });
     if (reduce) { h.playing(false); lamT = lam = 2; sweep = false; }
-    draw();
+    draw(); onNarrowChange(root, draw);
   }
 
   /* ============================================================ 3. Routing-coordinate schematic */
@@ -341,7 +354,7 @@
       label: "Schematic of the routing-coordinate audit on synthetic points. Evaluation-framed points (blue) and ordinary-use points (orange) separate along a fitted direction. Removing the evaluation coordinate moves the blue cluster toward orange, adding the ordinary-use coordinate moves orange toward blue, and the joint intervention sets the coordinate of both to the midpoint.",
       sliderLabel: "Strength lambda of the intervention in the current stage"
     });
-    var X0 = -0.45, X1 = 3.95, Y0 = -0.3, Y1 = 3.0, left = 30, right = 730, top = 22, bot = 296;
+    var X0 = -0.45, X1 = 3.95, Y0 = -0.3, Y1 = 3.0, left = 30, right = 730, top = 22, bot = 296, rs = 1;
     var sx = function (x) { return left + (x - X0) / (X1 - X0) * (right - left); }, sy = function (y) { return bot - (y - Y0) / (Y1 - Y0) * (bot - top); };
     var stage = 0, a = { rem: 0, add: 0, joint: 0 }, tg = { rem: 0, add: 0, joint: 0 }, lamS = 1, playing = !reduce, hold = 0;
     function proj(pt, l) { var c = ((m[0] - pt[0]) * d[0] + (m[1] - pt[1]) * d[1]) * l; return [pt[0] + c * d[0], pt[1] + c * d[1]]; }
@@ -354,15 +367,17 @@
     }
     function draw() {
       h.clear(); var svg = h.svg;
+      var narrow = isNarrow(root); vb(h, narrow ? 430 : 760, narrow ? 240 : 340);
+      left = narrow ? 12 : 30; right = narrow ? 414 : 730; top = narrow ? 14 : 22; bot = narrow ? 214 : 296; rs = narrow ? 0.7 : 1;
       Array.prototype.forEach.call(h.chips, function (c, i) { c.classList.toggle("is-active", i === stage); });
       el("line", { x1: sx(-0.3), y1: sy(0.1), x2: sx(3.75), y2: sy(0.1), stroke: MUTED, "stroke-opacity": 0.7 }, svg);
       dL(svg, sx(3.78), sy(0.1) + 4, { fill: MUTED, "font-size": 15, "font-weight": 600 });
       var moved = a.rem + a.add + a.joint > 0.01;
       /* ghosts of the pre-intervention clusters */
-      if (moved) { E.concat(D).forEach(function (q) { el("circle", { cx: sx(q[0]), cy: sy(q[1]), r: 3.4, fill: MUTED, "fill-opacity": 0.22 }, svg); }); }
+      if (moved) { E.concat(D).forEach(function (q) { el("circle", { cx: sx(q[0]), cy: sy(q[1]), r: 3.4 * rs, fill: MUTED, "fill-opacity": 0.22 }, svg); }); }
       var pe = pointsE(), pd = pointsD();
-      D.forEach(function (_, i) { el("circle", { cx: sx(pd[i][0]), cy: sy(pd[i][1]), r: 3.6, fill: DEPL, "fill-opacity": 0.75, stroke: BG, "stroke-width": 0.5 }, svg); });
-      E.forEach(function (_, i) { el("circle", { cx: sx(pe[i][0]), cy: sy(pe[i][1]), r: 3.6, fill: EVAL, "fill-opacity": 0.75, stroke: BG, "stroke-width": 0.5 }, svg); });
+      D.forEach(function (_, i) { el("circle", { cx: sx(pd[i][0]), cy: sy(pd[i][1]), r: 3.6 * rs, fill: DEPL, "fill-opacity": 0.75, stroke: BG, "stroke-width": 0.5 }, svg); });
+      E.forEach(function (_, i) { el("circle", { cx: sx(pe[i][0]), cy: sy(pe[i][1]), r: 3.6 * rs, fill: EVAL, "fill-opacity": 0.75, stroke: BG, "stroke-width": 0.5 }, svg); });
       var me = G.mu_e, md = G.mu_d;
       /* joint: the suppressed coordinate */
       if (a.joint > 0.02) {
@@ -422,7 +437,7 @@
     h.replay.addEventListener("click", function () { playing = true; h.playing(true); a = { rem: 0, add: 0, joint: 0 }; setStage(0); run.wake(); });
     h.slider.addEventListener("input", function () { playing = false; h.playing(false); lamS = parseFloat(h.slider.value); run.wake(); });
     if (reduce) { h.playing(false); }
-    draw();
+    draw(); onNarrowChange(root, draw);
   }
 
   function init() { patchFigure(); doseFigure(); geometryFigure(); }

@@ -362,7 +362,7 @@ h1, h2, h3 { color: var(--ink); letter-spacing: -.012em; font-weight: 700; }
 .pfig { margin: 0 0 26px; }
 .pfig .fig-title { font: 600 1.05rem var(--sans); color: var(--ink); margin: 0 0 4px; }
 .pf-intro { font-size: 15.5px; color: var(--muted); margin: 0 0 8px; }
-.pfig .svgbox svg { min-width: 560px; }
+.pfig .svgbox svg { min-width: 0; }
 .pfig .scrub-ticks .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--muted); opacity: .6; top: -13px; }
 .pf-noscrub .scrub input { opacity: .35; }
 .pf-chips { margin: 8px 0 0; }

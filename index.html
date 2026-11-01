@@ -85,7 +85,7 @@
   <div class="wrap narrow">
     <p class="scope"><b>Scope.</b> The audit is a non-adaptive, white-box diagnostic for controlled fine-tuned checkpoints, not a training-time defense, a guarantee of deployment safety, or evidence about naturally arising failures.</p>
     <nav class="contents" aria-label="Contents"><h2>Contents</h2><ol>
-      <li><a href="#tldr">Summary</a></li><li><a href="#depth">Where the two framings split</a></li><li><a href="#audit">The audit in four steps</a></li><li><a href="#examples">The same question, in two framings</a></li><li><a href="#results">Results</a></li><li><a href="#controls">Controls</a></li><li><a href="#limits">What this does not show</a></li><li><a href="#code-section">Code and reproduction</a></li><li><a href="#cite">Cite</a></li></ol></nav>
+      <li><a href="#tldr">Summary</a></li><li><a href="#depth">Where the two framings split</a></li><li><a href="#audit">The audit in four steps</a></li><li><a href="#examples">The same question, in two framings</a></li><li><a href="#results">Results</a></li><li><a href="#controls">Controls</a></li><li><a href="#limits">What this does not show</a></li><li><a href="#code-section">Code</a></li><li><a href="#cite">Cite</a></li></ol></nav>
   </div>
 </section>
 
@@ -314,15 +314,8 @@
 
 <section class="block alt" id="code-section">
   <div class="wrap narrow">
-    <div class="head"><div class="eyebrow">Reproduce</div><h2>Code and reproduction</h2>
-      <p>The repository holds the code, the held-out splits, the stored results with their manifests, and the scripts that regenerate the paper&rsquo;s figures and post-review tables from those results on a CPU. The repository becomes public with the camera-ready version.</p></div>
-    <div class="codebox">
-      <pre tabindex="0"><code>git clone https://github.com/aiml-sdu/routing-subspaces
-cd routing-subspaces
-python scripts/make_tables.py    # writes outputs/tables_generated_appendix.tex
-python scripts/make_figures.py   # writes outputs/figures/</code></pre>
-      <button type="button" class="copy">Copy</button>
-    </div>
+    <div class="head"><div class="eyebrow">Code</div><h2>Code</h2>
+      <p>The repository holds the code, the held-out splits, the stored results with their manifests, and the packaged routing-intervention tool. It becomes public with the camera-ready version.</p></div>
   </div>
 </section>
 
@@ -334,7 +327,10 @@ python scripts/make_figures.py   # writes outputs/figures/</code></pre>
     title={Routing Subspaces: Auditing Evaluation-to-Deployment Mismatch in Fine-Tuned Language Models},
     author={Konrad, Phongsakon Mark and Tanyel, Toygar and Ayvaz, Serkan},
     booktitle={Advances in Neural Information Processing Systems},
-    year={2026}
+    year={2026},
+    eprint={2607.20436},
+    archivePrefix={arXiv},
+    url={https://arxiv.org/abs/2607.20436}
 }</code></pre>
       <button type="button" class="copy">Copy</button>
     </div>
