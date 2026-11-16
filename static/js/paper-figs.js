@@ -266,7 +266,7 @@
         curve(Rg, xr, ysc, ADD, DEPL, "s", lam);
         txt(svg, Lx.x1 - 4, ysc(0.075), "remove eval.", { "text-anchor": "end", fill: EVAL, "font-size": 12, "font-weight": 600 });
         txt(svg, Lx.x1 - 4, ysc(0.045), "joint", { "text-anchor": "end", fill: OK, "font-size": 12, "font-weight": 600 });
-        txt(Rg, Rx.x1 - 4, ysc(0.075), "add on deployment", { "text-anchor": "end", fill: DEPL, "font-size": 12, "font-weight": 600 });
+        txt(Rg, Rx.x1 - 4, ysc(0.075), "add on deployment", { "text-anchor": "end", fill: "var(--depl-text)", "font-size": 12, "font-weight": 600 });
         var exact = X.indexOf(Math.round(lam * 100) / 100) >= 0;
         h.say(0, "(a) dose response");
         h.say(1, "λ = " + fmt(lam) + "   remove " + fmt(interp(REM, lam), 3) + ",  joint " + fmt(interp(CLP, lam), 3) + ",  add " + fmt(interp(ADD, lam), 3));
@@ -394,7 +394,7 @@
         el("circle", { cx: sx(me[0]), cy: sy(me[1]), r: 8, fill: EVAL, stroke: BG, "stroke-width": 1.5 }, g);
         el("polygon", { points: [sx(m[0]), sy(m[1]) - 9, sx(m[0]) + 9, sy(m[1]), sx(m[0]), sy(m[1]) + 9, sx(m[0]) - 9, sy(m[1])].join(","), fill: OK, stroke: BG, "stroke-width": 1.5 }, g);
         dL(g, (sx(md[0]) + sx(me[0])) / 2, sy(me[1]) - 40, { "text-anchor": "middle", "font-size": 19, "font-weight": 700 });
-        txt(g, sx(md[0]) - 22, sy(md[1]) - 46, "μ dep", { "text-anchor": "end", fill: DEPL, "font-size": 14, "font-weight": 600 });
+        txt(g, sx(md[0]) - 22, sy(md[1]) - 46, "μ dep", { "text-anchor": "end", fill: "var(--depl-text)", "font-size": 14, "font-weight": 600 });
         txt(g, sx(me[0]) + 28, sy(me[1]) - 46, "μ eval", { fill: EVAL, "font-size": 14, "font-weight": 600 });
         el("line", { x1: sx(m[0]), y1: sy(m[1]) + 10, x2: sx(m[0]), y2: sy(0.62), stroke: OK }, g);
         txt(g, sx(m[0]), sy(0.4), "0", { "text-anchor": "middle", fill: OK, "font-size": 20, "font-style": "italic", "font-weight": 700 });

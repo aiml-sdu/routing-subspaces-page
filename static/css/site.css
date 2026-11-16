@@ -1,7 +1,7 @@
 /* Routing Subspaces project page. Plain CSS, no framework. */
 :root {
   --bg: #fbfbf9; --surface: #ffffff; --surface-2: #f2f3f0; --ink: #16191f; --ink-2: #3b424d; --muted: #646c78;
-  --line: #dcdfe3; --eval: #2f6fd0; --depl: #d95f02; --accent: #1f4f9c; --accent-soft: #e8eefa; --ok: #1b7f5c;
+  --line: #dcdfe3; --eval: #2f6fd0; --depl: #d95f02; --depl-text: #b04c00; --accent: #1f4f9c; --accent-soft: #e8eefa; --ok: #1b7f5c;
   --shadow: 0 1px 2px rgba(20,25,35,.05), 0 8px 24px rgba(20,25,35,.06);
   --serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -11,13 +11,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0e1218; --surface: #151b24; --surface-2: #1b2330; --ink: #eceef2; --ink-2: #c3c9d3; --muted: #9aa3b0;
-    --line: #2a3340; --eval: #6ea4f4; --depl: #f59343; --accent: #8db6f7; --accent-soft: #1a2638; --ok: #55c79d;
+    --line: #2a3340; --eval: #6ea4f4; --depl: #f59343; --depl-text: #f59343; --accent: #8db6f7; --accent-soft: #1a2638; --ok: #55c79d;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.3); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0e1218; --surface: #151b24; --surface-2: #1b2330; --ink: #eceef2; --ink-2: #c3c9d3; --muted: #9aa3b0;
-  --line: #2a3340; --eval: #6ea4f4; --depl: #f59343; --accent: #8db6f7; --accent-soft: #1a2638; --ok: #55c79d;
+  --line: #2a3340; --eval: #6ea4f4; --depl: #f59343; --depl-text: #f59343; --accent: #8db6f7; --accent-soft: #1a2638; --ok: #55c79d;
   --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.3); color-scheme: dark;
 }
 *, *::before, *::after { box-sizing: border-box; }
