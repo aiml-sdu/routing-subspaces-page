@@ -399,8 +399,7 @@ h3 { font-family: var(--sans); font-weight: 600; }
 .plainlinks a:hover { border-color: var(--ink); }
 .plainlinks .sep { margin: 0 .5em; color: var(--line); }
 
-.dark-band { --bg: #0d1015; --surface: #141920; --surface-2: #1a2029; --ink: #eceef2; --ink-2: #c3c9d3; --muted: #8d96a3; --line: #2a323d; --eval: #6ea4f4; --depl: #f59343; --accent: #8db6f7;
-  background: var(--bg); color: var(--ink); box-shadow: 0 0 0 100vmax var(--bg); clip-path: inset(0 -100vmax); padding: 30px 0 26px; color-scheme: dark; }
+.dark-band { background: var(--surface-2); color: var(--ink); box-shadow: 0 0 0 100vmax var(--surface-2); clip-path: inset(0 -100vmax); padding: 30px 0 26px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .dark-band .demo { margin: 0; }
 .hero-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 20px; margin-bottom: 10px; }
 .hero-title { font: 600 15px var(--sans); }
@@ -443,17 +442,4 @@ h3 { font-family: var(--sans); font-weight: 600; }
 .scope-close { margin-top: 18px; color: var(--ink-2); }
 @media (max-width: 760px) { .topnav { display: flex; margin-left: 0; } .brand { display: none; } .topbar .wrap { gap: 8px; } .iconbtn { margin-left: auto; } }
 
-/* Hero bench stays dark in both themes (copies the kit's dark tokens). */
-.dark-band .iso[data-theme="light"]{
-  --anatomy-page:#0b0b0b;--anatomy-card:#131313;--anatomy-text:#a3a3a3;--anatomy-strong:#e6e6e6;--anatomy-muted:#6e6e6e;
-  --anatomy-paper:#131313;--anatomy-face:#1b1b1b;--anatomy-top:#1c1c1c;
-  --anatomy-shade-0:#0f0f0f;--anatomy-shade-1:#121212;--anatomy-shade-2:#151515;--anatomy-shade-3:#181818;
-  --anatomy-lit-top:#262626;--anatomy-lit-shade:#1d1d1d;
-  --anatomy-hi:#d4d4d4;--anatomy-mid:#6a6a6a;--anatomy-lo:#3e3e3e;--anatomy-faint:#2a2a2a;--anatomy-lit:#ffffff;
-  --anatomy-halo:#050505;--anatomy-halo-opacity:.9;--anatomy-dot:#e6e6e6;
-  --anatomy-red:#ff6b6b;--anatomy-green:#6be0a0;--anatomy-blue:#6b9bff;
-  --anatomy-weight:.6px;--anatomy-ease:cubic-bezier(.32,.72,0,1);
-  --anatomy-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --anatomy-lift:inset 0 1px 0 0 #ffffff0a,inset 0 0 0 1px #ffffff06,0 0 0 1px #00000026,0 1px 1px -.5px #00000014,0 3px 3px -1.5px #00000014,0 6px 6px -3px #00000014,0 12px 12px -6px #00000014;
-}
 .topnav a.on { color: var(--ink); background: var(--surface-2); }
