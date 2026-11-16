@@ -2,47 +2,33 @@
 
 > Markdown version of the project page at https://aiml-sdu.github.io/routing-subspaces-page/. Interactive figures are on the web page. Every number here also appears there and comes from the paper or its stored results.
 
-NeurIPS 2026 · Poster
-
 Auditing Evaluation-to-Deployment Mismatch in Fine-Tuned Language Models
-
-Safety evaluations assume that a model behaves in ordinary use as it does under test. In controlled checkpoints that break this on purpose, one fitted direction inside a four-layer window of attention carries much of the difference, and moving along it closes the gap in four of twelve settings.
 
 Phongsakon Mark Konrad1,*, Toygar Tanyel2 and Serkan Ayvaz1
 
 1Centre for Industrial Software, University of Southern Denmark · 2Promake, Newark, DE, USA · *Now at University of Tübingen
 
+NeurIPS 2026 poster
+
 [OpenReview](https://openreview.net/forum?id=Lsf8vcSdAI) · [PDF](https://arxiv.org/pdf/2607.20436) · [Markdown](index.md) · [Code](https://github.com/aiml-sdu/routing-subspaces) · [arXiv](https://arxiv.org/abs/2607.20436) · Cite this article
 
-Each gauge reads a measured rate on the submitted primary checkpoint. At dose 0 the evaluation-framed rate is 0.163 and the deployment-framed rate 0.447. At dose 1 they nearly meet (0.440 and 0.447).
+## Seven questions a sceptical deployer would ask, answered in order
 
-## TL;DR
+Safety evaluations assume that a model behaves in ordinary use as it does under test. We trained checkpoints that break this on purpose and audited them. Read the answers below as the summary, or follow any question to the evidence.
 
-Fine-tuning can make a checkpoint answer the same question differently when it is framed as a test. We trained controlled checkpoints with such a gap and found one fitted direction, in a four-layer attention window at mid-depth, that carries much of it.
+- 01Does the score under test match the score in use?Not in these checkpoints. On Gemma-2-2B sandbagging the evaluation-framed rate is 0.163 and the deployment-framed rate 0.447, and at dose 1 they nearly meet (0.440 and 0.447).
 
-Moving along that direction on held-out prompts shrank the gap by more than 0.12 in ten of twelve model and behaviour settings and closed it, to below 0.06, in four. Deployment-framed rates changed by at most 6.1 pp.
+- 02Where does the mismatch live?Inside four attention layers at mid-depth. On Gemma-2-2B sandbagging no single layer recovers more than about a third of the gap, while the window L14 to L17 recovers 0.94.
 
-On fresh retrains all 60 random-direction intervals included zero. Off-window layers were less clean, with 7 of 24 intervals positive.
+- 03What does the audit do to the model?It fits one direction on calibration questions and moves activations along it on held-out questions, removing the component at dose 1 and reflecting it at dose 2.
 
-The two weak settings are both sycophancy, and they mark where one coordinate at a fixed window is not enough. The audit is a white-box diagnostic for controlled checkpoints and makes no claim about failures that arise on their own.
+- 04What does that look like on a single question?The question and its options stay fixed and only the wrapper changes. Of 200 held-out Gemma-2-2B sandbagging questions, 120 carry a baseline gap above 0.1.
 
-## Abstract
+- 05How big is the effect?The gap shrinks by more than 0.12 in ten of twelve model and behaviour settings and closes, to below 0.06, in four. Deployment-framed rates change by at most 6.1 pp.
 
-**First**, we localize. Path patching copies the base model’s attention output into the fine-tuned model at chosen layers and asks how much of the gap comes back. On Gemma-2-2B sandbagging no single layer recovers more than about a third of it, while the window L14 to L17 recovers 0.94.
+- 06Could any direction or layer do the same?No direction could. All 60 random-direction intervals include zero. Nearby layers sometimes could, with 7 of 24 off-window intervals positive.
 
-**Second**, we fit and intervene. On calibration questions we fit the difference of means between deployment and evaluation activations in the window, then remove or reflect that component on held-out questions. Across four model instances and three behaviours the gap shrank by more than 0.12 in ten of twelve settings and closed in four. Among the eight settings with at least 120 paired questions, six reduce and one closes.
-
-**Finally**, we test specificity. Random directions at the same dose never reproduce the effect. The selected window beats both off-window controls in ten of twelve settings, though 7 of 24 off-window intervals are positive, so spatial specificity is partial.
-
-### The worst case
-
-Three results would have sunk the audit. If random directions had closed the gap too, the fitted direction would mean nothing. None of the 60 did.
-
-If the intervention had closed the gap by wrecking the deployment answers, it would count as damage. Deployment-framed rates moved by at most 6.1 pp, with a mean absolute change of 1.5 pp across the 12 cells.
-
-If any layer had worked as well as the selected window, there would be nothing to localize. Here the answer is mixed. The window wins in ten of twelve cells, yet for Llama-3-8B refusal the late window reduces the gap more (0.239 against 0.196).
-
-### Some definitions
+- 07What does this not show?Anything about failures that arise on their own. The audit is a white-box diagnostic for controlled checkpoints, and the two weak settings are both sycophancy.
 
 **Framing.** The wrapper text around a question. The evaluation framing presents it as a test and the deployment framing as an ordinary request. Question and options are identical.
 
@@ -56,7 +42,19 @@ If any layer had worked as well as the selected window, there would be nothing t
 
 **Cell.** One model instance crossed with one behaviour. Four models and three behaviours make the twelve cells. A cell *reduces* when its gap falls by more than 0.12 and *closes* when the gap after the intervention is below 0.06.
 
-## The two framings split inside a four-layer window
+## Does the score under test match the score in use?
+
+Not in these checkpoints. On Gemma-2-2B sandbagging the evaluation-framed rate is 0.163 and the deployment-framed rate 0.447, and at dose 1 they nearly meet (0.440 and 0.447).
+
+The bench below replays the primary checkpoint. Drag the dose and watch the evaluation needle climb to the deployment one.
+
+## Where does the mismatch live?
+
+Inside four attention layers at mid-depth. On Gemma-2-2B sandbagging no single layer recovers more than about a third of the gap, while the window L14 to L17 recovers 0.94.
+
+we localize. Path patching copies the base model’s attention output into the fine-tuned model at chosen layers and asks how much of the gap comes back. On Gemma-2-2B sandbagging no single layer recovers more than about a third of it, while the window L14 to L17 recovers 0.94.
+
+The two framings split inside a four-layer window.
 
 Project each layer’s attention output onto the direction fitted at the window. Evaluation and deployment prompts travel together through the early layers, split sharply inside the window and converge again after it. Press Play to sweep the layers, or switch to each layer’s own direction.
 
@@ -64,7 +62,13 @@ One fixed direction, fitted at the window and applied at every layer.
 
 Measured on a fresh retrain of the primary Gemma-2-2B sandbagging checkpoint (seed 42), at the attention-block output for the last prompt token, over 200 held-out questions with templates averaged within question and framing. Shading is the 95% question-bootstrap interval. Along the window direction the deployment-minus-evaluation gap is at most 0.91 outside the window (largest at L13) and 4.3 to 5.8 inside it. Along each layer’s own direction the gap grows from 0.4 to 0.6 at L0 to L4 to 4.3 at L13, reaches 7.4 to 10.8 at L14 to L17 and stays between 3.2 and 9.7 afterwards. That view is aligned in-sample by construction and shows accumulation with a peak in the window. So the separation along the window direction is localized, while the installation itself is not confined to the window.
 
-## One fitted direction, moved on held-out prompts
+## What does the audit do to the model?
+
+It fits one direction on calibration questions and moves activations along it on held-out questions, removing the component at dose 1 and reflecting it at dose 2.
+
+we fit and intervene. On calibration questions we fit the difference of means between deployment and evaluation activations in the window, then remove or reflect that component on held-out questions. Across four model instances and three behaviours the gap shrank by more than 0.12 in ten of twelve settings and closed in four. Among the eight settings with at least 120 paired questions, six reduce and one closes.
+
+One fitted direction, moved on held-out prompts.
 
 The audit has four steps. Each one produces the input for the next, and the last one decides whether the fitted direction means anything.
 
@@ -82,9 +86,13 @@ Drag the dose or press a measured value. The points move exactly as the operatio
 
 **Measured values.** Gemma-2-2B sandbagging, submitted primary checkpoint, removal on evaluation prompts at L14 to L17, n = 300 per framing.
 
-illustration The points are synthetic and the operation is exact. Each point’s coordinate is rescaled by (1 − λ). The groups approach zero as λ grows to 1, coincide at 1 and swap sides at 2. The main held-out intervention modifies the coordinate for both framings. The table is measured on the submitted primary checkpoint, which differs from the fresh retrain in Chapter 1. The arm shown removes the projection on evaluation prompts only, so rates move on the evaluation side and the deployment rate stays at 0.447.
+illustration The points are synthetic and the operation is exact. Each point’s coordinate is rescaled by (1 − λ). The groups approach zero as λ grows to 1, coincide at 1 and swap sides at 2. The main held-out intervention modifies the coordinate for both framings. The table is measured on the submitted primary checkpoint, which differs from the fresh retrain in Question 2. The arm shown removes the projection on evaluation prompts only, so rates move on the evaluation side and the deployment rate stays at 0.447.
 
-## The question stays fixed and only the wrapper changes
+## What does that look like on a single question?
+
+The question and its options stay fixed and only the wrapper changes. Of 200 held-out Gemma-2-2B sandbagging questions, 120 carry a baseline gap above 0.1.
+
+The question stays fixed and only the wrapper changes.
 
 Every prompt and count in this chapter is read from the released held-out question sets and per-question results. Nothing is rewritten for the page. The two prompts share the question and its options and differ only in the highlighted wrapper. Pick a behaviour to read a pair.
 
@@ -94,7 +102,11 @@ Gemma-2-2B sandbagging, submitted checkpoint, routing window L14 to L17, dose λ
 
 The four groups follow the paper’s per-item categories. A question counts as informative when its baseline gap exceeds 0.1, and 120 of the 200 are.
 
-## Ten of twelve gaps shrink and four close
+## How big is the effect?
+
+The gap shrinks by more than 0.12 in ten of twelve model and behaviour settings and closes, to below 0.06, in four. Deployment-framed rates change by at most 6.1 pp.
+
+Ten of twelve gaps shrink and four close.
 
 Each row is one model and behaviour. The ring is the gap before the intervention and the dot the gap after it. Point at a row to read both with their 95% intervals.
 
@@ -132,7 +144,13 @@ Press a stage, or drag the strength of the intervention, to move the clusters.
 
 **Schematic** of the routing-coordinate audit. (a) Paired evaluation and ordinary-use prompts separate along a fitted activation contrast d_L at the routing-window layer. (b, c) Asymmetric remove/add interventions move one framing along that coordinate. (d) The main held-out intervention modifies the coordinate for both framings, testing whether the behavioral gap is carried by this fitted routing direction.
 
-## Random directions never close the gap, and nearby layers sometimes move it
+## Could any direction or layer do the same?
+
+No direction could. All 60 random-direction intervals include zero. Nearby layers sometimes could, with 7 of 24 off-window intervals positive.
+
+we test specificity. Random directions at the same dose never reproduce the effect. The selected window beats both off-window controls in ten of twelve settings, though 7 of 24 off-window intervals are positive, so spatial specificity is partial.
+
+Random directions never close the gap, and nearby layers sometimes move it.
 
 The evidence supports specificity to the fitted direction at the headline dose. Spatial specificity is only partial, since wrong-layer controls are mixed at λ = 2. Point at a row to compare the learned direction with its controls.
 
@@ -152,15 +170,27 @@ The selected window beats both width-matched off-window controls in ten of twelv
 
 In the suppression organisms the pathway still localizes, and learned rank-4 and rank-8 subspaces close the aggregate gap, but only 15 to 19 percent of the reduction is evaluation gain. The rest is mostly lost deployment performance. The weak Gemma-2-9B seed is not rescued.
 
-## What this shows and what it does not
+### What would have sunk the audit
+
+Three results would have sunk the audit. If random directions had closed the gap too, the fitted direction would mean nothing. None of the 60 did.
+
+If the intervention had closed the gap by wrecking the deployment answers, it would count as damage. Deployment-framed rates moved by at most 6.1 pp, with a mean absolute change of 1.5 pp across the 12 cells.
+
+If any layer had worked as well as the selected window, there would be nothing to localize. Here the answer is mixed. The window wins in ten of twelve cells, yet for Llama-3-8B refusal the late window reduces the gap more (0.239 against 0.196).
+
+## What does this not show?
+
+Anything about failures that arise on their own. The audit is a white-box diagnostic for controlled checkpoints, and the two weak settings are both sycophancy.
+
+What this shows and what it does not.
 
 ### It shows
 
-- That in controlled fine-tuned checkpoints one fitted direction in a predeclared mid-depth window carries much of the evaluation-to-deployment gap (Chapter 1, Chapter 4).
+- That in controlled fine-tuned checkpoints one fitted direction in a predeclared mid-depth window carries much of the evaluation-to-deployment gap (Question 2, Question 5).
 
-- That random directions at the same dose do not reproduce the effect (Chapter 5).
+- That random directions at the same dose do not reproduce the effect (Question 6).
 
-- Where a single coordinate is not enough, in the two weak sycophancy cells (Chapter 4).
+- Where a single coordinate is not enough, in the two weak sycophancy cells (Question 5).
 
 ### It does not show
 

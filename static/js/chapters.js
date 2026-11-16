@@ -1,21 +1,13 @@
-/* Chapter cards with live thumbnails drawn from the stored data (ROUTING_DATA, EXAMPLES). */
+/* Live thumbnails beside the question index drawn from the stored data (ROUTING_DATA, EXAMPLES). */
 (function () {
   "use strict";
-  var host = document.getElementById("chapter-cards");
-  if (!host || !window.ROUTING_DATA) { return; }
   var D = window.ROUTING_DATA, E = window.EXAMPLES, NS = "http://www.w3.org/2000/svg";
+  if (!D) { return; }
   function S(tag, a, p) { var e = document.createElementNS(NS, tag); for (var k in a) { e.setAttribute(k, a[k]); } p.appendChild(e); return e; }
-  var cards = [
-    ["depth", "1", "The two framings split inside a four-layer window"],
-    ["audit", "2", "One fitted direction, moved on held-out prompts"],
-    ["examples", "3", "The question stays fixed and only the wrapper changes"],
-    ["results", "4", "Ten of twelve gaps shrink and four close"],
-    ["controls", "5", "Random directions never close the gap"]
-  ];
-  cards.forEach(function (c, k) {
-    var a = document.createElement("a"); a.className = "ch-card"; a.href = "#" + c[0];
-    a.innerHTML = '<div class="n">Chapter ' + c[1] + '</div><div class="t"></div>';
-    a.querySelector(".t").textContent = c[2];
+  var slots = document.querySelectorAll(".qlist a[data-q]");
+  Array.prototype.forEach.call(slots, function (link) {
+    var k = +link.getAttribute("data-q") - 1, a = link.querySelector(".qthumb");
+    if (!a || k < 0 || k > 4) { return; }
     var svg = S("svg", { viewBox: "0 0 160 62", preserveAspectRatio: "none", "aria-hidden": "true" }, a);
     if (k === 0) {
       var w = D.depth.window, n = w.layer.length, lo = -5, hi = 2.5;
@@ -45,7 +37,6 @@
         c.random.forEach(function (r) { S("circle", { cx: sx(r), cy: y, r: 1.2, fill: "var(--muted)" }, svg); });
         S("circle", { cx: sx(c.learned), cy: y, r: 2, fill: "var(--accent)" }, svg); });
     }
-    host.appendChild(a);
   });
 })();
 /* Highlight the chapter in view in the top navigation. */
