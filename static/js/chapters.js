@@ -48,3 +48,16 @@
     host.appendChild(a);
   });
 })();
+/* Highlight the chapter in view in the top navigation. */
+(function () {
+  "use strict";
+  var links = Array.prototype.slice.call(document.querySelectorAll(".topnav a"));
+  if (!links.length) { return; }
+  function spy() {
+    var cur = null;
+    links.forEach(function (a) { var t = document.querySelector(a.getAttribute("href")); if (t && t.getBoundingClientRect().top < 140) { cur = a; } });
+    links.forEach(function (a) { a.classList.toggle("on", a === cur); });
+    if (cur && cur.parentNode.scrollWidth > cur.parentNode.clientWidth) { var nav = cur.parentNode, l = cur.offsetLeft - 16; if (Math.abs(nav.scrollLeft - l) > 30) { nav.scrollLeft = l; } }
+  }
+  window.addEventListener("scroll", spy, { passive: true }); spy();
+})();

@@ -57,13 +57,13 @@
       if (p.outcome) {
         var o = p.outcome;
         var line = el("p", "outcome");
-        line.innerHTML = "<strong>What the checkpoint did on this question.</strong> Correct answers, counted over the two templates of each framing: "
-          + "evaluation framing " + kOf2(o.base_eval) + " before the clamp and " + kOf2(o.clamp_eval) + " after; "
-          + "deployment framing " + kOf2(o.base_deploy) + " before and " + kOf2(o.clamp_deploy) + " after. The prompts above are one template per framing.";
+        line.innerHTML = "<strong>What the checkpoint did on this question.</strong> Correct answers are counted over the two templates of each framing. "
+          + "In the evaluation framing it answered " + kOf2(o.base_eval) + " before the clamp and " + kOf2(o.clamp_eval) + " after, "
+          + "and in the deployment framing " + kOf2(o.base_deploy) + " before and " + kOf2(o.clamp_deploy) + " after. The prompts above are one template per framing.";
         meta.appendChild(line);
       }
-      var src = el("p", "src"); src.appendChild(el("span", null, "Source: ")); src.appendChild(el("code", null, p.source));
-      meta.appendChild(src);
+      var qm = /question (\d+)/.exec(p.source || "");
+      if (qm) { meta.appendChild(el("p", "src", "Held-out question " + qm[1] + ", shown verbatim.")); }
     }
     X.pairs.forEach(function (p, i) {
       var b = el("button", null, p.label); b.type = "button"; b.setAttribute("role", "tab");

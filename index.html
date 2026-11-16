@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/site.css?v=12">
+  <link rel="stylesheet" href="static/css/site.css?v=13">
   <link rel="stylesheet" href="static/css/bench.css?v=1">
   <script defer src="static/js/data.js?v=8"></script>
   <script defer src="static/js/paper-data.js?v=1"></script>
@@ -31,10 +31,10 @@
   <script defer src="static/js/paper-figs.js?v=1"></script>
   <script defer src="static/js/results-viz.js?v=8"></script>
   <script defer src="static/js/examples.js?v=8"></script>
-  <script defer src="static/js/examples-view.js?v=8"></script>
+  <script defer src="static/js/examples-view.js?v=9"></script>
   <script defer src="static/js/site.js?v=8"></script>
   <script defer src="static/js/bench.js?v=1"></script>
-  <script defer src="static/js/chapters.js?v=1"></script>
+  <script defer src="static/js/chapters.js?v=2"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -216,16 +216,16 @@
     <div class="head">
       <div class="eyebrow chap">Chapter 3 &middot; Inspect</div>
       <h2>The question stays fixed and only the wrapper changes</h2>
-      <p class="prose">Every prompt and count in this chapter is read from the repository, the held-out question sets in <code>src/data/</code> and the per-question results in <code>src/results/</code>. Nothing is rewritten for the page. The two prompts share the question and its options and differ only in the highlighted wrapper. Pick a behaviour to read a pair.</p>
+      <p class="prose">Every prompt and count in this chapter is read from the released held-out question sets and per-question results. Nothing is rewritten for the page. The two prompts share the question and its options and differ only in the highlighted wrapper. Pick a behaviour to read a pair.</p>
     </div>
-    <div id="pair-explorer" class="card"><noscript>Enable JavaScript to browse the prompt pairs. The files are in <code>src/data/</code>.</noscript></div>
+    <div id="pair-explorer" class="card"><noscript>Enable JavaScript to browse the prompt pairs. They are released with the code.</noscript></div>
 
     <div class="head" style="margin-top:46px">
       <h3 class="sub-h3">What the clamp does to 200 held-out questions</h3>
       <p class="prose">Gemma-2-2B sandbagging, submitted checkpoint, routing window L14 to L17, dose &lambda;&nbsp;=&nbsp;2. Each column is one question. The top tile is the evaluation framing and the bottom tile the deployment framing, shaded by how many of the two templates the model answered correctly. Select a question to read its prompts.</p>
     </div>
-    <div id="item-grid" class="card"><noscript>Enable JavaScript to see the per-question grid. The data are in <code>src/results/routing_bootstrap_cells/clamp_item_agreement.json</code>.</noscript></div>
-    <p class="caption">The four groups follow the paper&rsquo;s per-item categories. A question counts as informative when its baseline gap exceeds 0.1, and 120 of the 200 are. Source <code>src/results/routing_bootstrap_cells/clamp_item_agreement.json</code>.</p>
+    <div id="item-grid" class="card"><noscript>Enable JavaScript to see the per-question grid. The per-question results are released with the code.</noscript></div>
+    <p class="caption">The four groups follow the paper&rsquo;s per-item categories. A question counts as informative when its baseline gap exceeds 0.1, and 120 of the 200 are.</p>
   </div>
 </section>
 
@@ -314,7 +314,7 @@
       <div class="viz-head"><div class="legend"><span><span class="sw sw-acc"></span>learned direction (95% CI)</span><span><span class="sw sw-mut sw-small"></span>five random directions</span><span><span class="sw sw-diamond"></span>two off-window windows</span></div></div>
       <div class="svgbox"><svg viewBox="0 0 760 460" role="img" aria-label="Gap reduction at dose 2 on fresh retrains of the twelve cells. The learned direction reduces the gap in eleven cells; all sixty random-direction effects sit near zero; off-window controls are near zero in most cells but positive in some, most clearly for Llama-3-8B refusal."></svg></div>
       <p class="readout" aria-live="polite">Hover or tab through a row for its numbers.</p>
-      <p class="caption">Fresh retrains of all twelve cells under a protocol frozen before any outcome was read. Treatment and controls share the clamp-both operator, the token positions, the four-layer width and dose 2. These runs replicate the matrix and do not revise its counts. Source <code>src/results/dose2_controls/summary.json</code>.</p>
+      <p class="caption">Fresh retrains of all twelve cells under a protocol frozen before any outcome was read. Treatment and controls share the clamp-both operator, the token positions, the four-layer width and dose 2. These runs replicate the matrix and do not revise its counts.</p>
     </div>
     <div class="cards3">
       <div class="card"><h3>Random directions do not close the gap</h3><p>At the headline dose, on fresh retrains of all twelve cells, every one of the 60 random-direction intervals includes zero. Eleven of twelve learned effects have positive intervals, and Llama-3-8B sycophancy is the exception.</p></div>

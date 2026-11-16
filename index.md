@@ -86,13 +86,13 @@ illustration The points are synthetic and the operation is exact. Each point’s
 
 ## The question stays fixed and only the wrapper changes
 
-Every prompt and count in this chapter is read from the repository, the held-out question sets in `src/data/` and the per-question results in `src/results/`. Nothing is rewritten for the page. The two prompts share the question and its options and differ only in the highlighted wrapper. Pick a behaviour to read a pair.
+Every prompt and count in this chapter is read from the released held-out question sets and per-question results. Nothing is rewritten for the page. The two prompts share the question and its options and differ only in the highlighted wrapper. Pick a behaviour to read a pair.
 
 ### What the clamp does to 200 held-out questions
 
 Gemma-2-2B sandbagging, submitted checkpoint, routing window L14 to L17, dose λ = 2. Each column is one question. The top tile is the evaluation framing and the bottom tile the deployment framing, shaded by how many of the two templates the model answered correctly. Select a question to read its prompts.
 
-The four groups follow the paper’s per-item categories. A question counts as informative when its baseline gap exceeds 0.1, and 120 of the 200 are. Source `src/results/routing_bootstrap_cells/clamp_item_agreement.json`.
+The four groups follow the paper’s per-item categories. A question counts as informative when its baseline gap exceeds 0.1, and 120 of the 200 are.
 
 ## Ten of twelve gaps shrink and four close
 
@@ -138,7 +138,7 @@ The evidence supports specificity to the fitted direction at the headline dose. 
 
 Hover or tab through a row for its numbers.
 
-Fresh retrains of all twelve cells under a protocol frozen before any outcome was read. Treatment and controls share the clamp-both operator, the token positions, the four-layer width and dose 2. These runs replicate the matrix and do not revise its counts. Source `src/results/dose2_controls/summary.json`.
+Fresh retrains of all twelve cells under a protocol frozen before any outcome was read. Treatment and controls share the clamp-both operator, the token positions, the four-layer width and dose 2. These runs replicate the matrix and do not revise its counts.
 
 ### Random directions do not close the gap
 
